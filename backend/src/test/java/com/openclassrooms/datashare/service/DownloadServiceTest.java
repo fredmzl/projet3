@@ -12,11 +12,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,7 +27,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
@@ -43,7 +42,6 @@ class DownloadServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
     private DownloadService downloadService;
 
     @TempDir
@@ -57,6 +55,11 @@ class DownloadServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         validToken = "3326f92e-76a6-4e6d-8687-4d80f088045a";
+        
+        // Initialiser le service avec le répertoire temporaire
+        downloadService = new DownloadService(tempDir.toString());
+        ReflectionTestUtils.setField(downloadService, "fileRepository", fileRepository);
+        ReflectionTestUtils.setField(downloadService, "passwordEncoder", passwordEncoder);
         
         // Créer un utilisateur de test
         testUser = new User();
