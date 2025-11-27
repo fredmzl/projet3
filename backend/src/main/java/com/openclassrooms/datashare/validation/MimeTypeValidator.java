@@ -12,56 +12,51 @@ import java.util.Set;
  * Validateur de types MIME pour les fichiers uploadés.
  * <p>
  * Responsabilités :
- * - Vérifier que le type MIME est autorisé (whitelist)
- * - Bloquer les extensions dangereuses (blacklist)
+ * - Bloquer les extensions et types MIME dangereux (blacklist)
+ * - Autoriser tous les autres types de fichiers
  * - Détecter les tentatives de contournement
  * <p>
  * Configuration :
- * - Whitelist : images, documents, archives
- * - Blacklist : exécutables, scripts shell
+ * - Blacklist : exécutables, scripts, fichiers système dangereux
+ * - Tout le reste est autorisé par défaut
  */
 @Component
 @Slf4j
 public class MimeTypeValidator {
 
-    // Whitelist des types MIME autorisés
-    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
-            // Images
-            "image/jpeg",
-            "image/jpg",
-            "image/png",
-            "image/gif",
-            "image/bmp",
-            "image/webp",
-            "image/svg+xml",
-            // Documents
-            "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
-            "application/vnd.ms-excel",
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
-            "application/vnd.ms-powerpoint",
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
-            "text/plain",
-            "text/csv",
-            "text/html",
-            "text/css",
-            "text/javascript",
-            "text/markdown",
-            // Archives
-            "application/zip",
-            "application/x-zip-compressed",
-            "application/x-rar-compressed",
-            "application/x-7z-compressed",
-            "application/gzip",
-            "application/x-tar"
+    // Blacklist des types MIME dangereux
+    private static final List<String> BLOCKED_MIME_TYPES = Arrays.asList(
+            // Exécutables Windows
+            "application/x-msdownload",
+            "application/x-msdos-program",
+            "application/x-msi",
+            "application/x-exe",
+            "application/exe",
+            "application/x-winexe",
+            // Scripts et code exécutable
+            "application/x-sh",
+            "application/x-shellscript",
+            "application/x-bat",
+            "application/x-java-archive",
+            "application/java-archive",
+            // Fichiers système dangereux
+            "application/x-deb",
+            "application/x-rpm",
+            "application/x-apple-diskimage"
     );
 
     // Blacklist des extensions dangereuses
     private static final Set<String> BLOCKED_EXTENSIONS = Set.of(
-            "exe", "bat", "sh", "cmd", "com", "pif", "application",
-            "gadget", "msi", "msp", "scr", "vbs", "js", "jar",
-            "app", "deb", "rpm"
+            // Exécutables Windows
+            "exe", "bat", "cmd", "com", "pif", "application",
+            "gadget", "msi", "msp", "scr", "dll",
+            // Scripts
+            "vbs", "vbe", "js", "jse", "ws", "wsf", "wsh",
+            "ps1", "psm1", "sh", "bash",
+            // Packages et archives exécutables
+            "jar", "app", "deb", "rpm", "dmg", "pkg",
+            // Autres formats dangereux
+            "cpl", "inf", "ins", "isp", "lnk", "msc", "reg"
     );
 
     /**
@@ -91,21 +86,19 @@ public class MimeTypeValidator {
             return false;
         }
 
-        boolean isAllowed = ALLOWED_MIME_TYPES.stream()
-                .anyMatch(allowedType -> {
-                    // Support pour les wildcards (e.g., image/*)
-                    if (allowedType.endsWith("/*")) {
-                        String prefix = allowedType.substring(0, allowedType.length() - 2);
-                        return contentType.startsWith(prefix + "/");
-                    }
-                    return contentType.equals(allowedType);
-                });
+        // Vérifier si le MIME type est dans la blacklist
+        boolean isBlocked = BLOCKED_MIME_TYPES.stream()
+                .anyMatch(blockedType -> contentType.equals(blockedType) || 
+                         contentType.startsWith(blockedType + ";"));
 
-        if (!isAllowed) {
-            log.warn("MIME type not allowed: {} for file: {}", contentType, filename);
+        if (isBlocked) {
+            log.warn("MIME type blocked: {} for file: {}", contentType, filename);
+            return false;
         }
 
-        return isAllowed;
+        // Si pas bloqué, le fichier est autorisé
+        log.debug("MIME type allowed: {} for file: {}", contentType, filename);
+        return true;
     }
 
     /**

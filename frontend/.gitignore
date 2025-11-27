@@ -21,6 +21,9 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+playwright-report/
+test-results/
+*.png
 
 # Cypress
 cypress-results.json

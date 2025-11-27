@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Seed database with test user for E2E tests"
+set -e
+
+echo "🌱 Seeding database with test data..."
+echo "================================================================"
+
+cd backend
+
+# Execute le script de seed
+./seed-test-data.sh
+
+echo ""
+echo "================================================================"
+echo "✅ Database seeded successfully!"
+echo "   Test user: testuser@example.net / password"

@@ -15,17 +15,47 @@
   </mat-toolbar>
 
   <div class="content">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Espace Personnel</mat-card-title>
-        <mat-card-subtitle>Bienvenue dans votre espace de gestion de fichiers</mat-card-subtitle>
-      </mat-card-header>
+    <div class="files-header">
+      <button 
+        mat-raised-button 
+        color="primary"
+        (click)="openUploadModal()"
+        aria-label="Ajouter des fichiers">
+        <mat-icon>cloud_upload</mat-icon>
+        Ajouter des fichiers
+      </button>
+    </div>
+
+    <!-- État vide -->
+    <mat-card class="empty-state">
       <mat-card-content>
-        <p>
-          Vous êtes connecté avec succès. Cette page sera développée dans les prochaines US
-          pour gérer vos fichiers (US04, US05, US06).
-        </p>
+        <div class="empty-content">
+          <mat-icon class="empty-icon">inbox</mat-icon>
+          <h2>Aucun fichier</h2>
+          <p class="text-muted">
+            Commencez par uploader votre premier fichier pour le partager de manière sécurisée.
+          </p>
+          <button 
+            mat-raised-button 
+            color="primary"
+            (click)="openUploadModal()">
+            <mat-icon>cloud_upload</mat-icon>
+            Uploader mon premier fichier
+          </button>
+        </div>
       </mat-card-content>
     </mat-card>
+
+    <!-- Liste des fichiers (à implémenter dans US05) -->
+    <!-- <div class="files-list">
+      TODO: afficher la liste des fichiers
+    </div> -->
   </div>
 </div>
+
+<!-- Modal d'upload -->
+<app-file-upload-modal
+  [show]="showUploadModal()"
+  (close)="closeUploadModal()"
+  (uploaded)="onFileUploaded()">
+</app-file-upload-modal>

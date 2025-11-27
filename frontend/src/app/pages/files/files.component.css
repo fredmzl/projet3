@@ -27,17 +27,83 @@ mat-toolbar {
   margin: 0 auto;
 }
 
-mat-card {
-  margin-top: 2rem;
+.files-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.files-header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* État vide */
+.empty-state {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.empty-content h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #212529;
+}
+
+.empty-content p {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  color: #6c757d;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Responsive */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .content {
     padding: 1rem;
   }
 
   .user-info {
     display: none;
+  }
+
+  .files-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .files-header button {
+    width: 100%;
+  }
+
+  .empty-content {
+    padding: 1rem;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
   }
 }

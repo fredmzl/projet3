@@ -68,6 +68,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise run frontend:log` | Affiche les logs du frontend en temps réel |
 | `mise run frontend:tests:all` | Exécute tous les tests frontend (single run) |
 | `mise run frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
+| `mise run frontend:tests:e2e` | Exécute les tests e2e |
 
 ### Base de données
 
@@ -77,6 +78,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
 | `mise run database:flush --storage` | Supprime la base de données ET tous les fichiers du storage |
 | `mise run database:bootstrap` | Crée des utilisateurs et fichiers de test (testuser, listuser, alice) |
+| `mise run database:seed` | Crée un utilisateur testuser@example.net/password |
 
 ### Storage
 

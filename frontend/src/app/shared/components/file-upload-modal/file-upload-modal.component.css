@@ -1,0 +1,306 @@
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-dialog {
+  width: 90%;
+  max-width: 600px;
+  margin: 1rem;
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+  z-index: 1051;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+mat-card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.close-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+mat-card-content {
+  padding: 1.5rem;
+}
+
+/* Zone de drop */
+.file-drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background-color: #fafafa;
+}
+
+.file-drop-zone.drag-over {
+  border-color: #3f51b5;
+  background-color: #e8eaf6;
+}
+
+.file-drop-zone.has-file {
+  border-style: solid;
+  border-color: #4caf50;
+  background-color: #f1f8f4;
+  padding: 1.5rem;
+}
+
+.upload-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #9e9e9e;
+  margin-bottom: 1rem;
+}
+
+.upload-text {
+  font-size: 1rem;
+  color: #616161;
+  margin: 0.5rem 0;
+}
+
+.upload-text-or {
+  font-size: 0.875rem;
+  color: #9e9e9e;
+  margin: 1rem 0;
+}
+
+.file-input-label {
+  cursor: pointer;
+  display: inline-block;
+  margin: 1rem 0;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.upload-hint {
+  font-size: 0.875rem;
+  color: #9e9e9e;
+  margin-top: 1rem;
+}
+
+/* Info fichier sélectionné */
+.file-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-icon {
+  font-size: 3rem;
+  width: 3rem;
+  height: 3rem;
+  color: #4caf50;
+}
+
+.file-details {
+  flex: 1;
+  text-align: left;
+}
+
+.file-name {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  color: #212529;
+  word-break: break-word;
+}
+
+.file-size {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin: 0.25rem 0 0;
+}
+
+/* Message d'erreur */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+}
+
+.error-message mat-icon {
+  color: #c62828;
+}
+
+/* Options d'upload */
+.upload-options {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Barre de progression */
+.upload-progress {
+  margin-top: 1.5rem;
+}
+
+.progress-text {
+  text-align: center;
+  margin-top: 0.5rem;
+  color: #616161;
+  font-size: 0.875rem;
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Vue succès */
+.success-view {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.success-icon {
+  font-size: 4rem;
+  width: 4rem;
+  height: 4rem;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.success-view h3 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 1rem 0 0.5rem;
+  color: #212529;
+}
+
+.success-view .text-muted {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.download-link-container {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.download-link-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+  background-color: #f5f5f5;
+}
+
+.download-link-input:focus {
+  outline: none;
+  border-color: #3f51b5;
+}
+
+.success-actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 0.5rem;
+  }
+
+  mat-card-header {
+    padding: 1rem;
+  }
+
+  mat-card-content {
+    padding: 1rem;
+  }
+
+  .file-drop-zone {
+    padding: 2rem 1rem;
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .download-link-container {
+    flex-direction: column;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}

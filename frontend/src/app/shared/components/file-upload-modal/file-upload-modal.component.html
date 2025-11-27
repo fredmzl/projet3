@@ -1,0 +1,190 @@
+@if (show()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <mat-card class="modal-content">
+        <!-- En-tête -->
+        <mat-card-header>
+          <mat-card-title>
+            @if (isSuccess()) {
+              Fichier uploadé avec succès
+            } @else {
+              Uploader un fichier
+            }
+          </mat-card-title>
+          <button 
+            mat-icon-button 
+            class="close-button" 
+            (click)="closeModal()"
+            aria-label="Fermer">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-card-header>
+
+        <mat-card-content>
+          <!-- Vue: Succès -->
+          @if (isSuccess()) {
+            <div class="success-view">
+              <mat-icon class="success-icon">check_circle</mat-icon>
+              <h3>Votre fichier est prêt à être partagé !</h3>
+              <p class="text-muted">Copiez le lien ci-dessous pour le partager :</p>
+              
+              <div class="download-link-container">
+                <input 
+                  type="text" 
+                  class="download-link-input" 
+                  [value]="uploadState().downloadUrl || ''"
+                  readonly
+                  aria-label="Lien de téléchargement">
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  (click)="copyDownloadLink()">
+                  <mat-icon>content_copy</mat-icon>
+                  Copier le lien
+                </button>
+              </div>
+
+              <div class="success-actions">
+                <button 
+                  mat-raised-button 
+                  color="primary"
+                  (click)="closeModal()">
+                  Fermer
+                </button>
+              </div>
+            </div>
+          } 
+          <!-- Vue: Formulaire d'upload -->
+          @else {
+            <form [formGroup]="uploadForm" (ngSubmit)="uploadFile()">
+              <!-- Zone de sélection de fichier -->
+              <div 
+                class="file-drop-zone"
+                [class.drag-over]="isDragOver()"
+                [class.has-file]="selectedFile() !== null"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)">
+                
+                @if (selectedFile() === null) {
+                  <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                  <p class="upload-text">Glissez-déposez un fichier ici</p>
+                  <p class="upload-text-or">ou</p>
+                  <label for="file-input" class="file-input-label">
+                    <button 
+                      mat-raised-button 
+                      color="primary"
+                      type="button"
+                      (click)="fileInput.click()">
+                      <mat-icon>attach_file</mat-icon>
+                      Choisir un fichier
+                    </button>
+                  </label>
+                  <input 
+                    #fileInput
+                    id="file-input"
+                    type="file" 
+                    class="file-input-hidden"
+                    (change)="onFileSelected($event)"
+                    aria-label="Sélectionner un fichier">
+                  <p class="upload-hint">Taille maximale : 1 GB</p>
+                } @else {
+                  <div class="file-info">
+                    <mat-icon class="file-icon">description</mat-icon>
+                    <div class="file-details">
+                      <p class="file-name">{{ fileName() }}</p>
+                      <p class="file-size">{{ fileSize() }}</p>
+                    </div>
+                    <button 
+                      mat-icon-button 
+                      type="button"
+                      (click)="selectedFile.set(null)"
+                      aria-label="Supprimer le fichier">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </div>
+                }
+              </div>
+
+              <!-- Message d'erreur -->
+              @if (isError()) {
+                <div class="error-message">
+                  <mat-icon>error</mat-icon>
+                  {{ uploadState().error }}
+                </div>
+              }
+
+              <!-- Options -->
+              @if (selectedFile() !== null) {
+                <div class="upload-options">
+                  <!-- Mot de passe optionnel -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Mot de passe (optionnel)</mat-label>
+                    <input 
+                      matInput 
+                      type="password"
+                      formControlName="password"
+                      placeholder="Protégez le téléchargement avec un mot de passe">
+                    <mat-icon matPrefix>lock</mat-icon>
+                    @if (uploadForm.get('password')?.hasError('minlength')) {
+                      <mat-error>Le mot de passe doit contenir au moins 6 caractères</mat-error>
+                    }
+                    <mat-hint>Minimum 6 caractères</mat-hint>
+                  </mat-form-field>
+
+                  <!-- Durée d'expiration -->
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Durée de validité</mat-label>
+                    <mat-select formControlName="expirationDays">
+                      @for (option of expirationOptions; track option.value) {
+                        <mat-option [value]="option.value">
+                          {{ option.label }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                    <mat-icon matPrefix>schedule</mat-icon>
+                    <mat-hint>Le fichier sera automatiquement supprimé après expiration</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Barre de progression -->
+                @if (isUploading()) {
+                  <div class="upload-progress">
+                    <mat-progress-bar 
+                      mode="determinate" 
+                      [value]="uploadState().progress">
+                    </mat-progress-bar>
+                    <p class="progress-text">Upload en cours... {{ uploadState().progress }}%</p>
+                  </div>
+                }
+
+                <!-- Actions -->
+                <div class="modal-actions">
+                  <button 
+                    mat-button 
+                    type="button"
+                    (click)="closeModal()"
+                    [disabled]="isUploading()">
+                    Annuler
+                  </button>
+                  <button 
+                    mat-raised-button 
+                    color="primary"
+                    type="submit"
+                    [disabled]="!canUpload() || isUploading()">
+                    <mat-icon>cloud_upload</mat-icon>
+                    @if (isUploading()) {
+                      Upload en cours...
+                    } @else {
+                      Uploader
+                    }
+                  </button>
+                </div>
+              }
+            </form>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+}
