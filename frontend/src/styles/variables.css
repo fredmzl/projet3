@@ -1,0 +1,111 @@
+/* ============================================
+   DESIGN SYSTEM - DataShare
+   ============================================ */
+
+:root {
+  /* === COULEURS === */
+  
+  /* Fond dégradé principal */
+  --gradient-primary: linear-gradient(135deg, #E5A68A 0%, #D88B7A 50%, #CD7A6E 100%);
+  
+  /* Couleurs principales */
+  --color-primary: #D88B7A;
+  --color-primary-dark: #CD7A6E;
+  --color-primary-light: #E5A68A;
+  
+  --color-secondary: #2C2C2C;
+  --color-secondary-light: #4A4A4A;
+  
+  /* Couleurs de fond */
+  --color-bg-card: #FFFFFF;
+  --color-bg-input: #F5E6DD;
+  --color-bg-button: #F5E6DD;
+  --color-bg-button-hover: #EDD9CC;
+  
+  /* Couleurs de texte */
+  --color-text-primary: #2C2C2C;
+  --color-text-secondary: #666666;
+  --color-text-placeholder: #999999;
+  --color-text-white: #FFFFFF;
+  
+  /* Couleurs d'état (Callout) */
+  --color-info: #E3F2FD;
+  --color-info-border: #2196F3;
+  --color-info-icon: #1976D2;
+  
+  --color-warning: #FFF3E0;
+  --color-warning-border: #FF9800;
+  --color-warning-icon: #F57C00;
+  
+  --color-error: #FFEBEE;
+  --color-error-border: #F44336;
+  --color-error-icon: #D32F2F;
+  
+  /* Switch/Segmented control */
+  --color-switch-active: #CD7A6E;
+  --color-switch-inactive: #E0E0E0;
+  --color-switch-text-active: #FFFFFF;
+  --color-switch-text-inactive: #666666;
+  
+  /* === ESPACEMENTS === */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-xxl: 3rem;     /* 48px */
+  
+  /* === BORDURES === */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+  --border-radius-full: 9999px;
+  
+  --border-width: 1px;
+  --border-color: #E0E0E0;
+  
+  /* === OMBRES === */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+  
+  /* Ombre pour le bouton upload circulaire */
+  --shadow-circle: 0 8px 16px rgba(205, 122, 110, 0.3);
+  
+  /* === TYPOGRAPHIE === */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-md: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.5rem;    /* 24px */
+  --font-size-xxl: 2rem;     /* 32px */
+  
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* === TRANSITIONS === */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* === BREAKPOINTS (pour référence dans le code) === */
+  /* Mobile: < 640px */
+  /* Tablet: 640px - 1024px */
+  /* Desktop: > 1024px */
+  
+  /* === Z-INDEX === */
+  --z-index-dropdown: 1000;
+  --z-index-header: 100;
+  --z-index-modal: 2000;
+  --z-index-tooltip: 3000;
+}

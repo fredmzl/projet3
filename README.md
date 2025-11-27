@@ -48,6 +48,18 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise run backend:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
 | `mise run backend:log` | Affiche les logs du backend en temps réel |
 
+### Frontend
+
+| Commande | Description |
+|----------|-------------|
+| `mise run frontend:build` | Build l'application frontend pour la production |
+| `mise run frontend:start` | Démarre le serveur de développement Angular (port 4200) |
+| `mise run frontend:stop` | Arrête le serveur de développement |
+| `mise run frontend:restart` | Redémarre le serveur de développement |
+| `mise run frontend:log` | Affiche les logs du frontend en temps réel |
+| `mise run frontend:tests:all` | Exécute tous les tests frontend (single run) |
+| `mise run frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
+
 ### Base de données
 
 | Commande | Description |

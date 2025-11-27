@@ -1,0 +1,31 @@
+<div class="files-container">
+  <mat-toolbar color="primary">
+    <span>DataShare - Mes Fichiers</span>
+    <span class="spacer"></span>
+    @if (authService.currentUser(); as user) {
+      <span class="user-info">
+        <mat-icon>account_circle</mat-icon>
+        {{ user.email }}
+      </span>
+    }
+    <button mat-button (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Déconnexion
+    </button>
+  </mat-toolbar>
+
+  <div class="content">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Espace Personnel</mat-card-title>
+        <mat-card-subtitle>Bienvenue dans votre espace de gestion de fichiers</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>
+          Vous êtes connecté avec succès. Cette page sera développée dans les prochaines US
+          pour gérer vos fichiers (US04, US05, US06).
+        </p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

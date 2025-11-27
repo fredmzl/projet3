@@ -1,0 +1,74 @@
+<div class="login-container">
+  <app-header variant="login" />
+
+  <main class="main-content">
+    <div class="card">
+      <h1 class="card-title">Connexion</h1>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form">
+        <!-- Champ Email -->
+        <div class="form-field">
+          <label for="login" class="label">Email</label>
+          <input
+            id="login"
+            type="email"
+            formControlName="login"
+            placeholder="Saisissez votre email..."
+            autocomplete="username"
+            class="input"
+            [class.input--error]="loginForm.get('login')?.invalid && loginForm.get('login')?.touched"
+          />
+          @if (loginForm.get('login')?.hasError('required') && loginForm.get('login')?.touched) {
+            <span class="error-message">L'email est obligatoire</span>
+          }
+          @if (loginForm.get('login')?.hasError('email') && loginForm.get('login')?.touched) {
+            <span class="error-message">L'email doit être au format valide</span>
+          }
+        </div>
+
+        <!-- Champ Mot de passe -->
+        <div class="form-field">
+          <label for="password" class="label">Mot de passe</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Saisissez votre mot de passe..."
+            autocomplete="current-password"
+            class="input"
+            [class.input--error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          />
+          @if (loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched) {
+            <span class="error-message">Le mot de passe est obligatoire</span>
+          }
+        </div>
+
+        <!-- Message d'erreur global -->
+        @if (error()) {
+          <app-callout [message]="error()!" type="error" />
+        }
+
+        <!-- Lien vers inscription -->
+        <div class="link-container">
+          <a routerLink="/register" class="link">Créer un compte</a>
+        </div>
+
+        <!-- Bouton de connexion -->
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="loading() || loginForm.invalid"
+        >
+          @if (loading()) {
+            <span class="spinner"></span>
+            <span>Connexion en cours...</span>
+          } @else {
+            <span>Connexion</span>
+          }
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <app-footer />
+</div>

@@ -56,7 +56,7 @@
                 "validRegistration": {
                   "summary": "Inscription valide",
                   "value": {
-                    "email": "user@example.com",
+                    "login": "user@example.com",
                     "password": "SecurePass123!"
                   }
                 }
@@ -155,7 +155,7 @@
                 "validLogin": {
                   "summary": "Connexion valide",
                   "value": {
-                    "email": "user@example.com",
+                    "login": "user@example.com",
                     "password": "SecurePass123!"
                   }
                 }
@@ -916,23 +916,23 @@
     "schemas": {
       "RegisterRequest": {
         "required": [
-          "email",
+          "login",
           "password"
         ],
         "type": "object",
         "properties": {
-          "email": {
+          "login": {
             "maxLength": 255,
             "type": "string",
-            "description": "Adresse email unique (sera validée)",
+            "description": "Identifiant de connexion unique (email validé)",
             "format": "email",
             "example": "user@example.com"
           },
           "password": {
             "maxLength": 100,
-            "minLength": 8,
+            "minLength": 6,
             "type": "string",
-            "description": "Mot de passe (minimum 8 caractères).\nSera hashé avec bcrypt avant stockage.\n",
+            "description": "Mot de passe (minimum 6 caractères).\nSera hashé avec bcrypt avant stockage.\n",
             "format": "password",
             "example": "SecurePass123!"
           }
@@ -962,14 +962,14 @@
       },
       "LoginRequest": {
         "required": [
-          "email",
+          "login",
           "password"
         ],
         "type": "object",
         "properties": {
-          "email": {
+          "login": {
             "type": "string",
-            "description": "Adresse email du compte",
+            "description": "Identifiant de connexion du compte (email)",
             "format": "email",
             "example": "user@example.com"
           },
@@ -986,13 +986,11 @@
         "properties": {
           "token": {
             "type": "string",
-            "description": "Token JWT valide 24 heures",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDUzMzQ0MDAsImV4cCI6MTcwNTQyMDgwMH0.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
-          },
-          "user": {
-            "$ref": "#/components/schemas/LoginResponse_user"
+            "description": "Token JWT valide 24 heures. Le payload contient sub (email/login), iat (issued at) et exp (expiration)",
+            "example": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA1MzM0NDAwLCJleHAiOjE3MDU0MjA4MDB9.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
           }
-        }
+        },
+        "required": ["token"]
       },
       "FileUploadResponse": {
         "type": "object",

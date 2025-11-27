@@ -1,0 +1,102 @@
+<div class="register-container">
+  <app-header variant="login" />
+
+  <main class="main-content">
+    <div class="card">
+      <h1 class="card-title">Créer un compte</h1>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form">
+        <!-- Champ Email -->
+        <div class="form-field">
+          <label for="login" class="label">Email</label>
+          <input
+            id="login"
+            type="email"
+            formControlName="login"
+            placeholder="Saisissez votre email..."
+            autocomplete="username"
+            class="input"
+            [class.input--error]="hasError('login', 'required') || hasError('login', 'email')"
+          />
+          @if (hasError('login', 'required')) {
+            <span class="error-message">L'email est obligatoire</span>
+          }
+          @if (hasError('login', 'email')) {
+            <span class="error-message">L'email doit être au format valide</span>
+          }
+        </div>
+
+        <!-- Champ Mot de passe -->
+        <div class="form-field">
+          <label for="password" class="label">Mot de passe</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Saisissez votre mot de passe..."
+            autocomplete="new-password"
+            class="input"
+            [class.input--error]="hasError('password', 'required') || hasError('password', 'minlength')"
+          />
+          @if (hasError('password', 'required')) {
+            <span class="error-message">Le mot de passe est obligatoire</span>
+          }
+          @if (hasError('password', 'minlength')) {
+            <span class="error-message">Le mot de passe doit contenir au moins 6 caractères</span>
+          }
+        </div>
+
+        <!-- Champ Confirmation Mot de passe -->
+        <div class="form-field">
+          <label for="confirmPassword" class="label">Verification du mot de passe</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Saisissez le à nouveau"
+            autocomplete="new-password"
+            class="input"
+            [class.input--error]="hasError('confirmPassword', 'required') || registerForm.hasError('passwordMismatch')"
+          />
+          @if (hasError('confirmPassword', 'required')) {
+            <span class="error-message">La confirmation est obligatoire</span>
+          }
+          @if (registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched) {
+            <span class="error-message">Les mots de passe ne correspondent pas</span>
+          }
+        </div>
+
+        <!-- Message de succès -->
+        @if (successMessage()) {
+          <app-callout [message]="successMessage()!" type="info" />
+        }
+
+        <!-- Message d'erreur global -->
+        @if (errorMessage()) {
+          <app-callout [message]="errorMessage()!" type="error" />
+        }
+
+        <!-- Lien vers connexion -->
+        <div class="link-container">
+          <a routerLink="/login" class="link">J'ai déjà un compte</a>
+        </div>
+
+        <!-- Bouton d'inscription -->
+        <button
+          type="submit"
+          class="submit-button"
+          [disabled]="isLoading() || registerForm.invalid"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>Création en cours...</span>
+          } @else {
+            <span>Créer mon compte</span>
+          }
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <app-footer />
+</div>

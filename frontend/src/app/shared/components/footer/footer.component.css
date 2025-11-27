@@ -1,0 +1,25 @@
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-xl);
+}
+
+.copyright {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .footer {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+  
+  .copyright {
+    font-size: var(--font-size-xs);
+  }
+}

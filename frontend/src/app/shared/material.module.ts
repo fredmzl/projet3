@@ -1,0 +1,30 @@
+// Re-export commonly used Material modules for convenience
+// Import these directly in your components instead of using a module
+export { OverlayModule } from '@angular/cdk/overlay';
+export { CdkTreeModule } from '@angular/cdk/tree';
+export { PortalModule } from '@angular/cdk/portal';
+export { MatAutocompleteModule } from '@angular/material/autocomplete';
+export { MatButtonModule } from '@angular/material/button';
+export { MatButtonToggleModule } from '@angular/material/button-toggle';
+export { MatCardModule } from '@angular/material/card';
+export { MatCheckboxModule } from '@angular/material/checkbox';
+export { MatChipsModule } from '@angular/material/chips';
+export { MatRippleModule } from '@angular/material/core';
+export { MatDividerModule } from '@angular/material/divider';
+export { MatExpansionModule } from '@angular/material/expansion';
+export { MatFormFieldModule } from '@angular/material/form-field';
+export { MatIconModule } from '@angular/material/icon';
+export { MatInputModule } from '@angular/material/input';
+export { MatListModule } from '@angular/material/list';
+export { MatMenuModule } from '@angular/material/menu';
+export { MatPaginatorModule } from '@angular/material/paginator';
+export { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+export { MatSelectModule } from '@angular/material/select';
+export { MatSidenavModule } from '@angular/material/sidenav';
+export { MatSnackBarModule } from '@angular/material/snack-bar';
+export { MatSortModule } from '@angular/material/sort';
+export { MatTableModule } from '@angular/material/table';
+export { MatTabsModule } from '@angular/material/tabs';
+export { MatToolbarModule } from '@angular/material/toolbar';
+export { MatTreeModule } from '@angular/material/tree';
+export { ReactiveFormsModule } from '@angular/forms';

@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#MISE description="show frontend logs"
+
+set -e
+PIDFILE="${MISE_CONFIG_ROOT}/.frontend.pid"
+
+# Trap CTRL+C pour exit proprement
+trap 'exit 0' INT
+
+# Vérifier si déjà lancé
+if [ ! -f "$PIDFILE" ]; then
+    echo "❌ Frontend is not running (no PID file found)"
+    exit 1
+
+fi
+
+cd "${MISE_CONFIG_ROOT}/frontend" || exit 1
+tail -f frontend.log
