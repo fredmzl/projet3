@@ -30,7 +30,7 @@
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok.version>1.18.32</lombok.version>
-		<testcontainers.version>1.20.0</testcontainers.version>
+		<testcontainers.version>2.0.2</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -103,11 +103,26 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>junit-jupiter</artifactId>
+			<version>1.21.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>mysql</artifactId>
+			<artifactId>postgresql</artifactId>
+			<version>1.21.3</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Force docker-java API 1.44+ compatible -->
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-core</artifactId>
+			<version>3.4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.docker-java</groupId>
+			<artifactId>docker-java-transport-httpclient5</artifactId>
+			<version>3.4.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -123,6 +138,14 @@
 				<groupId>org.testcontainers</groupId>
 				<artifactId>testcontainers-bom</artifactId>
 				<version>${testcontainers.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<!-- Force docker-java compatible avec API 1.44+ -->
+			<dependency>
+				<groupId>com.github.docker-java</groupId>
+				<artifactId>docker-java-bom</artifactId>
+				<version>3.4.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -199,7 +222,7 @@
 								<exclude>**/dto/*.class</exclude>
 								<exclude>**/handler/ErrorDetails.class</exclude>
 								<exclude>**/configuration/**/*.class</exclude>
-								<exclude>**/EtudiantBackendApplication.class</exclude>
+								<exclude>**/DatashareBackendApplication.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -230,7 +253,7 @@
 								<exclude>**/dto/*.class</exclude>
 								<exclude>**/handler/ErrorDetails.class</exclude>
 								<exclude>**/configuration/**/*.class</exclude>
-								<exclude>**/EtudiantBackendApplication.class</exclude>
+								<exclude>**/DatashareBackendApplication.class</exclude>
 							</excludes>
 						</configuration>
 					</execution>

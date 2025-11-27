@@ -174,6 +174,7 @@ sequenceDiagram
     C-->>F: File download
     F-->>U: Save file
 ```
+
 ---
 ## 🔧 Choix Technologiques
 

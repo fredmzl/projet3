@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+#MISE description="Start backend server"
+
+set -e
+PIDFILE="${MISE_CONFIG_ROOT}/.backend.pid"
+
+# Vérifier si déjà lancé
+if [ -f "$PIDFILE" ]; then
+    PID=$(cat "$PIDFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "❌ Backend is already running (PID: $PID)"
+        exit 1
+    fi
+fi
+
+# Vérifier le port
+if lsof -ti :3000 > /dev/null; then
+    echo "❌ Port 3000 already in use"
+    exit 1
+fi
+
+cd "${MISE_CONFIG_ROOT}/backend" || exit 1
+nohup mvn spring-boot:run > backend.log 2>&1 &
+echo $! > "$PIDFILE"
+
+echo "✅ Backend started (PID: $(cat $PIDFILE)). Check backend.log for details."

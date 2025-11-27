@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="Flush backend database (destructive!)"
+
+set -e
+
+echo "⚠️  This will delete ALL database data!"
+read -p "Are you sure? (yes/no): " confirmation
+
+if [ "$confirmation" != "yes" ]; then
+    echo "❌ Operation cancelled"
+    exit 0
+fi
+
+cd "${MISE_CONFIG_ROOT}/backend" && docker compose down -v
+echo "✅ Database flushed"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#MISE description="Generate test coverage report"
+
+set -e
+
+cd "${MISE_CONFIG_ROOT}/backend" || exit 1
+
+echo "🧪 Running tests and generating coverage report..."
+mvn clean verify
+
+REPORT_PATH="${MISE_CONFIG_ROOT}/backend/target/site/jacoco/index.html"
+
+if [ -f "$REPORT_PATH" ]; then
+    echo "✅ Coverage report generated successfully"
+    echo "📊 Report location: $REPORT_PATH"
+    echo ""
+    echo "To view the report, run:"
+    echo "  xdg-open $REPORT_PATH"
+else
+    echo "❌ Failed to generate coverage report"
+    exit 1
+fi

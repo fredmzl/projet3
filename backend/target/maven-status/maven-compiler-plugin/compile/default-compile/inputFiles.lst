@@ -1,1 +1,14 @@
-/home/fred/oc/projet3/oc-projet3/backend/src/main/java/com/openclassrooms/datashare/DatashareApplication.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/DatashareApplication.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/AppConfig.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/logging/RequestLoggingFilterConfig.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/CustomUserDetailService.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/JwtAuthenticationFilter.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/SpringSecurityConfig.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/UserController.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/LoginRequestDTO.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/RegisterDTO.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/entities/User.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/mapper/UserDtoMapper.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/repository/UserRepository.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/JwtService.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/UserService.java

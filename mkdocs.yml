@@ -9,8 +9,8 @@ nav:
   - Documentation technique: 'documentation_technique.md'
   - Parcours utilisateur: 'us/user-journey.md'
   - API : 'api.md'
+  - Tests: 'tests.md'
   - Troubleshoot: 'troubleshoot.md'
-
 # Configuration
 theme:
   name: material

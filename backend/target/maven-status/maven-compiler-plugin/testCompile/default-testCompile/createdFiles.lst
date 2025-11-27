@@ -1,1 +1,3 @@
-com/openclassrooms/datashare/DatashareApplicationTests.class
+com/openclassrooms/datashare/service/JwtServiceTest.class
+com/openclassrooms/datashare/controller/UserControllerTest.class
+com/openclassrooms/datashare/service/UserServiceTest.class
