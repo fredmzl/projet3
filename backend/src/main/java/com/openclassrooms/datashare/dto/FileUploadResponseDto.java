@@ -14,6 +14,7 @@ public class FileUploadResponseDto {
     private UUID id;
     private String filename;
     private Long fileSize;
+    private String mimeType;
     private String downloadToken;
     private String downloadUrl;
     private LocalDateTime expirationDate;

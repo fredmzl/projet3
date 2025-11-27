@@ -171,7 +171,7 @@
                     mat-raised-button 
                     color="primary"
                     type="submit"
-                    [disabled]="!canUpload() || isUploading()">
+                    [disabled]="!canUpload() || isUploading() || uploadForm.invalid">
                     <mat-icon>cloud_upload</mat-icon>
                     @if (isUploading()) {
                       Upload en cours...

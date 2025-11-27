@@ -18,6 +18,15 @@ if [ -f "${MISE_CONFIG_ROOT}/backend/.env.cors" ]; then
     source "${MISE_CONFIG_ROOT}/backend/.env.cors"
 fi
 
+# Configuration de l'URL de téléchargement
+# Par défaut, utilise l'IP de la machine (détectée automatiquement)
+if [ -z "$DOWNLOAD_BASE_URL" ]; then
+    # Détecter l'IP principale (première IP non-localhost)
+    HOST_IP=$(hostname -I | awk '{print $1}')
+    export DOWNLOAD_BASE_URL="http://${HOST_IP}:3000/api/files/download"
+    echo "🔗 Download URL auto-configured: $DOWNLOAD_BASE_URL"
+fi
+
 # Vérifier le port
 if lsof -ti :3000 > /dev/null; then
     echo "❌ Port 3000 already in use"

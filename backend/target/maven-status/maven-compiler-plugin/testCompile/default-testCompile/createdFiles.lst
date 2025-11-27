@@ -1,10 +1,10 @@
 com/openclassrooms/datashare/service/UserServiceTest.class
 com/openclassrooms/datashare/service/FileStorageServiceTest.class
 com/openclassrooms/datashare/service/FileStorageServiceTest$1.class
-com/openclassrooms/datashare/controller/UserControllerTest.class
 com/openclassrooms/datashare/service/FileServiceTest.class
+com/openclassrooms/datashare/controller/UserControllerTest.class
 com/openclassrooms/datashare/controller/FileControllerListTest.class
 com/openclassrooms/datashare/controller/FileControllerTest$1.class
 com/openclassrooms/datashare/controller/FileControllerTest.class
-com/openclassrooms/datashare/controller/FileControllerDeleteTest.class
 com/openclassrooms/datashare/service/JwtServiceTest.class
+com/openclassrooms/datashare/controller/FileControllerDeleteTest.class
