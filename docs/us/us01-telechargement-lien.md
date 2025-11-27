@@ -217,7 +217,7 @@ Cache-Control: no-cache, no-store, must-revalidate
 
 ---
 
-### C. Mot de passe incorrect (Rate Limiting)
+### C. Mot de passe incorrect (Rate Limiting) - non implémenté
 
 !!! warning "Limitation des tentatives"
     **Tentative 1-3 :**
@@ -257,10 +257,9 @@ Cache-Control: no-cache, no-store, must-revalidate
     - ✅ Tokens de téléchargement uniques et aléatoires (UUID v4)
     - ✅ Vérification de l'expiration côté serveur
     - ✅ Hash bcrypt pour les mots de passe de protection
-    - ✅ Rate limiting : 3 tentatives de mot de passe par IP/token (15 min)
-    - ✅ Rate limiting : 10 téléchargements par minute par IP
+    - ❌ Rate limiting : 3 tentatives de mot de passe par IP/token (15 min)
+    - ❌ Rate limiting : 10 téléchargements par minute par IP
     - ✅ Pas d'énumération de fichiers possible (tokens aléatoires)
-    - ✅ Headers sécurisés (Cache-Control, X-Content-Type-Options)
     - ✅ Logging des téléchargements (IP, timestamp, user-agent)
 
 ---

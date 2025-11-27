@@ -13,6 +13,8 @@ if [ -f "$PIDFILE" ]; then
     fi
 fi
 
+
+# Charger la configuration CORS si le fichier existe
 if [ -f "${MISE_CONFIG_ROOT}/backend/.env.cors" ]; then
     echo "📥 Loading CORS configuration from .env.cors"
     source "${MISE_CONFIG_ROOT}/backend/.env.cors"

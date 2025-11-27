@@ -1,5 +1,8 @@
 package com.openclassrooms.datashare.configuration;
 
+import com.openclassrooms.datashare.exception.FileExpiredException;
+import com.openclassrooms.datashare.exception.FileNotFoundException;
+import com.openclassrooms.datashare.exception.InvalidPasswordException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,5 +80,63 @@ public class GlobalExceptionHandler {
         
         log.error("Unexpected error: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    /**
+     * Gère les erreurs de fichier non trouvé (US01 - Download).
+     * <p>
+     * Retourne HTTP 404 Not Found quand un fichier est introuvable.
+     * 
+     * @param ex Exception FileNotFoundException
+     * @return Message d'erreur
+     */
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleFileNotFoundException(FileNotFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Not Found");
+        error.put("message", ex.getMessage());
+        error.put("timestamp", LocalDateTime.now().toString());
+        
+        log.warn("File not found: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    /**
+     * Gère les erreurs de fichier expiré (US01 - Download).
+     * <p>
+     * Retourne HTTP 410 Gone quand un fichier a expiré.
+     * 
+     * @param ex Exception FileExpiredException
+     * @return Message d'erreur avec date d'expiration
+     */
+    @ExceptionHandler(FileExpiredException.class)
+    public ResponseEntity<Map<String, String>> handleFileExpiredException(FileExpiredException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Gone");
+        error.put("message", ex.getMessage());
+        error.put("expirationDate", ex.getExpirationDate().toString());
+        error.put("timestamp", LocalDateTime.now().toString());
+        
+        log.warn("File expired: {} (expired at {})", ex.getMessage(), ex.getExpirationDate());
+        return ResponseEntity.status(HttpStatus.GONE).body(error);
+    }
+
+    /**
+     * Gère les erreurs de mot de passe invalide (US01 - Download protégé).
+     * <p>
+     * Retourne HTTP 401 Unauthorized quand le mot de passe est incorrect ou manquant.
+     * 
+     * @param ex Exception InvalidPasswordException
+     * @return Message d'erreur
+     */
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPasswordException(InvalidPasswordException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Unauthorized");
+        error.put("message", ex.getMessage());
+        error.put("timestamp", LocalDateTime.now().toString());
+        
+        log.warn("Invalid password attempt: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

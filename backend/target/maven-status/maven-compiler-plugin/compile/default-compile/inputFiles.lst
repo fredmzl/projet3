@@ -5,8 +5,11 @@
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/CustomUserDetailService.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/JwtAuthenticationFilter.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/SpringSecurityConfig.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/DownloadController.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/FileController.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/UserController.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileDownloadRequestDto.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileInfoResponseDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileListResponseDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileMetadataDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileUploadRequestDto.java
@@ -15,10 +18,14 @@
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/RegisterDTO.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/entities/File.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/entities/User.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/exception/FileExpiredException.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/exception/FileNotFoundException.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/exception/InvalidPasswordException.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/mapper/FileMapper.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/mapper/UserDtoMapper.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/repository/FileRepository.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/repository/UserRepository.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/DownloadService.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/FileService.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/FileStorageService.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/service/JwtService.java

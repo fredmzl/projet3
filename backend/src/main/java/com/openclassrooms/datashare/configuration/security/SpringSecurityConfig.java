@@ -77,7 +77,7 @@ public class SpringSecurityConfig {
                         // No auth needed on :
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers("/api/files/download/**").permitAll()  // Download public
+                        .requestMatchers("/api/download/**").permitAll()  // US01 - Download public
                         // Protected routes :
                         .requestMatchers("/api/files/**").authenticated()
                         .anyRequest().authenticated()
