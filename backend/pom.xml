@@ -216,7 +216,7 @@
 						<configuration>
 							<excludes>
 								<!-- Exclure les classes générées -->
-								<exclude>**/mapper/*Impl.class</exclude>
+								<exclude>**/mapper/*.class</exclude>
 								<exclude>**/entities/*$*Builder.class</exclude>
 								<exclude>**/entities/*.class</exclude>
 								<exclude>**/dto/*.class</exclude>
@@ -247,7 +247,7 @@
 							</rules>
 							<excludes>
 								<!-- Exclure les classes générées -->
-								<exclude>**/mapper/*Impl.class</exclude>
+								<exclude>**/mapper/*.class</exclude>
 								<exclude>**/entities/*$*Builder.class</exclude>
 								<exclude>**/entities/*.class</exclude>
 								<exclude>**/dto/*.class</exclude>

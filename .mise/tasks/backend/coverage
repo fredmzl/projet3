@@ -11,6 +11,7 @@ mvn clean verify
 REPORT_PATH="${MISE_CONFIG_ROOT}/backend/target/site/jacoco/index.html"
 
 if [ -f "$REPORT_PATH" ]; then
+    mise run doc:restart 2>/dev/null || true
     echo "✅ Coverage report generated successfully"
     echo "📊 Report location: $REPORT_PATH"
     echo ""

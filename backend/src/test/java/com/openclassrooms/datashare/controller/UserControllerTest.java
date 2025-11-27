@@ -53,7 +53,7 @@ public class UserControllerTest {
         registry.add("spring.datasource.username", () -> myPostgreSQLContainer.getUsername());
         registry.add("spring.datasource.password", () -> myPostgreSQLContainer.getPassword());
         registry.add("spring.jpa.hibernate.ddl-auto", () -> "create");
-
+        registry.add("app.storage.path", () -> System.getProperty("java.io.tmpdir") + "/test-storage-user");
     }
 
     @AfterEach

@@ -47,6 +47,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 
 | Commande | Description |
 |----------|-------------|
+| `mise run database:show` | Affiche le contenu des tables de la base de données |
 | `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données postgresql |
 
 ### Configuration

@@ -1,3 +1,6 @@
+/home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/controller/FileControllerTest.java
 /home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/controller/UserControllerTest.java
+/home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/service/FileServiceTest.java
+/home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/service/FileStorageServiceTest.java
 /home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/service/JwtServiceTest.java
 /home/fred/oc/clean-projet3/projet3/backend/src/test/java/com/openclassrooms/datashare/service/UserServiceTest.java
