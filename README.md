@@ -54,7 +54,21 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 |----------|-------------|
 | `mise run database:show` | Affiche le contenu des tables de la base de données |
 | `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
+| `mise run database:flush --storage` | Supprime la base de données ET tous les fichiers du storage |
 | `mise run database:bootstrap` | Crée des utilisateurs et fichiers de test (testuser, listuser, alice) |
+
+### Storage
+
+| Commande | Description |
+|----------|-------------|
+| `mise run storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
+| `mise run storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
+
+### Données (Database + Storage)
+
+| Commande | Description |
+|----------|-------------|
+| `mise run showdata` | Affiche le contenu de la base de données et du storage |
 
 ### Configuration
 

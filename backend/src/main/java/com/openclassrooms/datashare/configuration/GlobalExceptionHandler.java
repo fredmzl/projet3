@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +41,25 @@ public class GlobalExceptionHandler {
         
         log.warn("Validation failed: {}", errors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    /**
+     * Gère les erreurs de conversion de type des paramètres (ex: UUID invalide).
+     * <p>
+     * Retourne HTTP 400 Bad Request quand un paramètre ne peut pas être converti.
+     * 
+     * @param ex Exception de conversion de type
+     * @return Message d'erreur
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Invalid parameter");
+        error.put("message", String.format("Le paramètre '%s' a une valeur invalide: %s", 
+            ex.getName(), ex.getValue()));
+        
+        log.warn("Type mismatch for parameter '{}': {}", ex.getName(), ex.getValue());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     /**

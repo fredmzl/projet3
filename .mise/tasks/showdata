@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Show database and storage data"
+
+set -e
+
+mise database:show
+mise storage:show

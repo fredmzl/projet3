@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -271,6 +272,113 @@ class FileServiceTest {
         LocalDateTime after = LocalDateTime.now().plusDays(days);
         assertThat(result).isAfter(before.minusSeconds(1));
         assertThat(result).isBefore(after.plusSeconds(1));
+    }
+
+    @Test
+    void deleteFile_WithValidOwner_DeletesSuccessfully() {
+        // Given
+        UUID fileId = UUID.randomUUID();
+        String filepath = "1/2025/11/18/uuid_test.pdf";
+        File file = createMockFile("token", filepath, null);
+        file.setId(fileId);
+
+        when(fileRepository.findByIdAndUser_Id(fileId, testUser.getId()))
+                .thenReturn(Optional.of(file));
+        doNothing().when(storageService).deleteFile(filepath);
+
+        // When
+        fileService.deleteFile(fileId, testUser);
+
+        // Then
+        verify(fileRepository).findByIdAndUser_Id(fileId, testUser.getId());
+        verify(storageService).deleteFile(filepath);
+        verify(fileRepository).delete(file);
+    }
+
+    @Test
+    void deleteFile_FileNotFound_ThrowsFileNotFoundException() {
+        // Given
+        UUID fileId = UUID.randomUUID();
+
+        when(fileRepository.findByIdAndUser_Id(fileId, testUser.getId()))
+                .thenReturn(Optional.empty());
+        when(fileRepository.findById(fileId)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThatThrownBy(() -> fileService.deleteFile(fileId, testUser))
+                .isInstanceOf(FileService.FileNotFoundException.class)
+                .hasMessageContaining("File not found");
+
+        verify(fileRepository).findByIdAndUser_Id(fileId, testUser.getId());
+        verify(fileRepository).findById(fileId);
+        verify(storageService, never()).deleteFile(anyString());
+        verify(fileRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteFile_UserNotOwner_ThrowsForbiddenFileAccessException() {
+        // Given
+        UUID fileId = UUID.randomUUID();
+        File file = createMockFile("token", "2/2025/11/18/uuid_test.pdf", null);
+        User otherUser = new User();
+        otherUser.setId(2L);
+        file.setUser(otherUser);
+
+        when(fileRepository.findByIdAndUser_Id(fileId, testUser.getId()))
+                .thenReturn(Optional.empty());
+        when(fileRepository.findById(fileId)).thenReturn(Optional.of(file));
+
+        // When/Then
+        assertThatThrownBy(() -> fileService.deleteFile(fileId, testUser))
+                .isInstanceOf(FileService.ForbiddenFileAccessException.class)
+                .hasMessageContaining("not authorized");
+
+        verify(fileRepository).findByIdAndUser_Id(fileId, testUser.getId());
+        verify(fileRepository).findById(fileId);
+        verify(storageService, never()).deleteFile(anyString());
+        verify(fileRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteFile_WithExpiredFile_DeletesSuccessfully() {
+        // Given
+        UUID fileId = UUID.randomUUID();
+        String filepath = "1/2025/11/18/uuid_test.pdf";
+        File file = createMockFile("token", filepath, null);
+        file.setId(fileId);
+        file.setExpirationDate(LocalDateTime.now().minusDays(1)); // Fichier expiré
+
+        when(fileRepository.findByIdAndUser_Id(fileId, testUser.getId()))
+                .thenReturn(Optional.of(file));
+        doNothing().when(storageService).deleteFile(filepath);
+
+        // When
+        fileService.deleteFile(fileId, testUser);
+
+        // Then
+        verify(fileRepository).delete(file);
+        verify(storageService).deleteFile(filepath);
+    }
+
+    @Test
+    void deleteFile_WithPasswordProtectedFile_DeletesWithoutPasswordCheck() {
+        // Given
+        UUID fileId = UUID.randomUUID();
+        String filepath = "1/2025/11/18/uuid_test.pdf";
+        File file = createMockFile("token", filepath, "$2a$10$hashedpassword");
+        file.setId(fileId);
+
+        when(fileRepository.findByIdAndUser_Id(fileId, testUser.getId()))
+                .thenReturn(Optional.of(file));
+        doNothing().when(storageService).deleteFile(filepath);
+
+        // When
+        fileService.deleteFile(fileId, testUser);
+
+        // Then
+        verify(fileRepository).delete(file);
+        verify(storageService).deleteFile(filepath);
+        verify(passwordEncoder, never()).matches(anyString(), anyString());
     }
 
     // Helper methods

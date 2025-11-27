@@ -243,6 +243,44 @@ public class FileService {
     }
 
     /**
+     * Supprime un fichier de l'utilisateur.
+     * 
+     * @param fileId L'identifiant UUID du fichier
+     * @param user L'utilisateur effectuant la suppression
+     * @throws FileNotFoundException Si le fichier n'existe pas
+     * @throws ForbiddenFileAccessException Si l'utilisateur n'est pas le propriétaire
+     */
+    @Transactional
+    public void deleteFile(java.util.UUID fileId, User user) {
+        log.info("Delete file request from user: {} (id={}) for file: {}", user.getLogin(), user.getId(), fileId);
+
+        // 1. Vérifier que le fichier existe et appartient à l'utilisateur
+        File file = fileRepository.findByIdAndUser_Id(fileId, user.getId())
+                .orElseThrow(() -> {
+                    log.warn("File not found or user not owner: fileId={}, userId={}", fileId, user.getId());
+                    // Vérifier si le fichier existe mais n'appartient pas à l'utilisateur
+                    if (fileRepository.findById(fileId).isPresent()) {
+                        return new ForbiddenFileAccessException(
+                            String.format("You are not authorized to delete this file (fileId: %s)", fileId)
+                        );
+                    }
+                    return new FileNotFoundException(
+                        String.format("File not found (fileId: %s)", fileId)
+                    );
+                });
+
+        log.debug("File found: {} ({}), filepath: {}", file.getOriginalFilename(), file.getFilename(), file.getFilepath());
+
+        // 2. Supprimer le fichier physique du système de fichiers
+        storageService.deleteFile(file.getFilepath());
+        log.debug("Physical file deleted: {}", file.getFilepath());
+
+        // 3. Supprimer les métadonnées en base de données
+        fileRepository.delete(file);
+        log.info("File deleted successfully: {} (id={})", file.getOriginalFilename(), fileId);
+    }
+
+    /**
      * Calcule la date d'expiration à partir du nombre de jours.
      * 
      * @param days Le nombre de jours avant expiration (1-7)
@@ -316,6 +354,24 @@ public class FileService {
      */
     public static class WeakPasswordException extends RuntimeException {
         public WeakPasswordException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * Exception levée quand un fichier n'est pas trouvé.
+     */
+    public static class FileNotFoundException extends RuntimeException {
+        public FileNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * Exception levée quand un utilisateur tente d'accéder à un fichier dont il n'est pas propriétaire.
+     */
+    public static class ForbiddenFileAccessException extends RuntimeException {
+        public ForbiddenFileAccessException(String message) {
             super(message);
         }
     }

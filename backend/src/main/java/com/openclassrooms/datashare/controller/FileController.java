@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Contrôleur REST pour la gestion des fichiers.
@@ -25,6 +26,7 @@ import java.util.Map;
  * Endpoints :
  * - GET /api/files : Liste paginée des fichiers de l'utilisateur
  * - POST /api/files : Upload d'un fichier avec authentification JWT
+ * - DELETE /api/files/{fileId} : Suppression d'un fichier
  * <p>
  * Sécurité : Tous les endpoints requièrent une authentification JWT valide.
  */
@@ -147,6 +149,56 @@ public class FileController {
                     
         } catch (Exception e) {
             log.error("Unexpected error during file upload", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred"));
+        }
+    }
+
+    /**
+     * Supprime un fichier de l'utilisateur.
+     * <p>
+     * Authentification requise via JWT.
+     * L'utilisateur doit être le propriétaire du fichier.
+     * 
+     * @param fileId L'identifiant UUID du fichier à supprimer
+     * @param userDetails L'utilisateur authentifié extrait du JWT
+     * @return 204 No Content si succès, ou erreur appropriée (401/403/404)
+     */
+    @DeleteMapping("/{fileId}")
+    public ResponseEntity<?> deleteFile(
+            @PathVariable java.util.UUID fileId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        try {
+            // Extraire User depuis UserDetails
+            if (!(userDetails instanceof User)) {
+                log.error("UserDetails is not an instance of User");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "Authentication error"));
+            }
+            
+            User user = (User) userDetails;
+            log.info("Delete file request from user: {} (id={}) for fileId: {}", 
+                user.getLogin(), user.getId(), fileId);
+            
+            // Appeler FileService.deleteFile()
+            fileService.deleteFile(fileId, user);
+            
+            // Retourner 204 No Content
+            return ResponseEntity.noContent().build();
+            
+        } catch (FileService.FileNotFoundException e) {
+            log.warn("File not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Not Found", "message", "Fichier non trouvé"));
+                    
+        } catch (FileService.ForbiddenFileAccessException e) {
+            log.warn("Forbidden file access: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Forbidden", "message", "Vous n'êtes pas autorisé à supprimer ce fichier"));
+                    
+        } catch (Exception e) {
+            log.error("Unexpected error during file deletion", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An unexpected error occurred"));
         }
