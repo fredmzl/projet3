@@ -13,7 +13,7 @@ Le rapport de couverture de code est généré automatiquement lors de l'exécut
 Pour générer le rapport de couverture :
 
 ```bash
-mise run backend:coverage
+mise backend:tests:coverage
 ```
 
 Le rapport sera disponible dans `backend/target/site/jacoco/index.html` et accessible via cette documentation.
@@ -28,16 +28,11 @@ Le rapport sera disponible dans `backend/target/site/jacoco/index.html` et acces
 
 ```bash
 # Tous les tests
-mise run backend:test
+mise backend:tests:all
 
 # Tests avec rapport de couverture
-mise run backend:coverage
+mise backend:tests:coverage
 ```
-
-#### Types de tests
-
-- **Tests unitaires** : UserServiceTest, JwtServiceTest (avec Mockito)
-- **Tests d'intégration** : UserControllerTest (avec Testcontainers + PostgreSQL)
 
 #### Seuil de couverture
 
@@ -58,7 +53,7 @@ Le rapport de couverture de code est généré automatiquement lors de l'exécut
 Pour générer le rapport de couverture :
 
 ```bash
-mise run frontend:tests:coverage
+mise frontend:tests:coverage
 ```
 
 Le rapport sera disponible dans `frontend/coverage/frontend/index.html`.
@@ -73,23 +68,11 @@ Le rapport sera disponible dans `frontend/coverage/frontend/index.html`.
 
 ```bash
 # Tous les tests (single run)
-mise run frontend:tests:all
+mise frontend:tests:all
 
 # Tests avec rapport de couverture
-mise run frontend:tests:coverage
+mise frontend:tests:coverage
 
 # Mode développement (watch)
 cd frontend && npm test
 ```
-
-#### Types de tests
-
-- **Tests unitaires** : AuthService, RegisterComponent, LoginComponent, AuthGuard
-- **Tests d'intégration** : User flows (inscription → connexion → navigation)
-- **Tests composants UI** : Header, Footer, Callout
-
-#### Résultats
-
-- **Total** : 172 tests ✅
-- **Couverture** : ~90%
-- **Temps d'exécution** : ~3.5 secondes

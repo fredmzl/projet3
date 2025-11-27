@@ -3,8 +3,26 @@
 
 set -e
 
+prerequisites=(
+    "python3" 
+    "pip" 
+    "docker"
+    # frontend 
+    "npm" 
+    "node"
+    # backend
+    "mvn" 
+    "java"
+)
+
+for cmd in "${prerequisites[@]}"; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "❌ $cmd could not be found. Please install $cmd."
+        exit 1
+    fi
+done
+
 echo "Installing dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt
-
 echo "✓ Dependencies installed!"

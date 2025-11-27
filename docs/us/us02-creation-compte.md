@@ -174,4 +174,3 @@ graph TD
     - [ ] L'utilisateur est redirigé vers la page de connexion après création
     - [ ] Un message de succès est affiché
     - [ ] Les erreurs de validation sont affichées correctement
-    - [ ] Le rate limiting empêche les créations de comptes en masse

@@ -1,0 +1,139 @@
+[ ca ]
+default_ca = ca_intermediate
+
+[ ca_root ]
+dir = pki/root
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/database
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+private_key = $dir/private/root.key.pem
+certificate = $dir/certs/root.cert.pem
+crl = $dir/crl/root.crl.pem
+crl_extensions = ext_crl
+default_md = sha256
+name_opt = ca_default
+cert_opt = ca_default
+default_crl_days = 30s
+default_days = 3650
+preserve = no
+policy = policy_strict
+
+[ client_ca_intermediate ]
+dir = pki/intermediate
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/database
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+private_key = $dir/private/intermediate_client_ca.key.pem
+certificate = $dir/certs/intermediate_client_ca.cert.pem
+crl = $dir/crl/intermediate_client_ca.crl.pem
+crl_extensions = ext_crl
+default_md = sha256
+name_opt = ca_default
+cert_opt = ca_default
+default_crl_days = 30
+default_days = 3650
+preserve = no
+policy = policy_loose
+# crlDistributionPoints = URI:http://example.com/crl.pem
+
+[ server_ca_intermediate ]
+dir = pki/intermediate
+certs = $dir/certs
+crl_dir = $dir/crl
+new_certs_dir = $dir/newcerts
+database = $dir/database
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+private_key = $dir/private/intermediate_server_ca.key.pem
+certificate = $dir/certs/intermediate_server_ca.cert.pem
+crl = $dir/crl/intermediate_client_ca.crl.pem
+crl_extensions = ext_crl
+default_md = sha256
+name_opt = ca_default
+cert_opt = ca_default
+default_crl_days = 30
+default_days = 3650
+preserve = no
+policy = policy_loose
+# crlDistributionPoints = URI:http://example.com/crl.pem
+
+[ policy_strict ]
+countryName = match
+stateOrProvinceName = match
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ policy_loose ]
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ req ]
+default_bits = 2048
+string_mask = utf8only
+default_md = sha256
+distinguished_name = req_distinguished_name
+
+[ req_distinguished_name ]
+countryName = Country Name (2 letter code)
+stateOrProvinceName = State or Province Name
+localityName = Locality Name
+0.organizationName = Organization Name
+organizationalUnitName = Organizational Unit Name
+commonName = Common Name
+emailAddress = Email Address
+
+[ ext_root ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer
+basicConstraints = critical, CA:true
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
+[ ext_intermediate ]
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always, issuer
+basicConstraints = critical, CA:true, pathlen:0
+keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+
+[ ext_client ]
+basicConstraints = CA:FALSE
+nsCertType = client, email
+nsComment = "OpenSSL Generated Client Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid, issuer
+keyUsage = critical, digitalSignature
+extendedKeyUsage = clientAuth
+# crlDistributionPoints = URI:http://example.com/crl.pem
+
+[ ext_server ]
+basicConstraints = CA:FALSE
+nsCertType = server
+nsComment = "OpenSSL Generated Server Certificate"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid, issuer:always
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = ${ENV::CERT_ALT_NAMES}
+# crlDistributionPoints = URI:http://example.com/crl.pem
+
+[ ext_crl ]
+authorityKeyIdentifier = keyid:always
+
+[ ext_ocsp ]
+basicConstraints = CA:FALSE
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid, issuer
+keyUsage = critical, digitalSignature
+extendedKeyUsage = critical, OCSPSigning

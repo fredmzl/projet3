@@ -177,7 +177,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
     - ✅ JWT obligatoire dans header `Authorization: Bearer <token>`
     - ✅ Filtrage par `userId` extrait du JWT (pas du body/params)
     - ✅ Pagination limitée à 100 éléments max par page
-    - ✅ Rate limiting : 100 requêtes par heure par utilisateur
     - ✅ CORS restreint aux origines autorisées
 
 ---

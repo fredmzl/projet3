@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:${PG_VERSION:-16.1-alpine}
+    environment:
+      POSTGRES_DB: ${DB_NAME:-datashare}
+      POSTGRES_USER: ${DB_USER:-db_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-db_password}
+      POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    networks:
+      - datashare-net
+    ports:
+      - ${DB_PORT:-5432}
+    volumes:
+      - datashare-db:/var/lib/postgresql/data
+
+  backend:
+    image: datashare-backend:latest
+    ports:
+    # - "3000:3000"
+    - "3000"
+    build:
+      context: .
+      dockerfile: ./backend/docker/Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-datashare}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-db_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-db_password}
+    volumes:
+      - datashare-storage:/var/datashare/storage
+    networks:
+      - datashare-net
+      # - default
+    depends_on:
+      - postgres
+
+  frontend:
+    image: datashare-frontend:latest
+    ports:
+    - "4200"
+    # - "4200"
+    build:
+      context: .
+      dockerfile: ./frontend/docker/Dockerfile
+    networks:
+      - datashare-net
+      # - default
+    depends_on:
+      - backend
+
+  rproxy:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./logs/nginx:/var/log/nginx
+      - ./docker/pki/server/certs/datashare.projet3.oc.cert.pem:/etc/nginx/server.crt:ro
+      - ./docker/pki/server/private/datashare.projet3.oc.key.pem:/etc/nginx/server.key:ro
+      - ./docker/pki/intermediate/certs/intermediate_server_ca.cert.pem:/etc/nginx/ssl/trusted_chain.crt:ro
+    networks:
+      - datashare-net
+      - default
+    depends_on:
+      - frontend
+
+volumes:
+  datashare-db:
+  datashare-storage:
+
+networks:
+  datashare-net:
+    driver: bridge
+    internal: true
