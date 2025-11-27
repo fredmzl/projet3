@@ -224,14 +224,13 @@ export class FilesComponent implements OnInit {
    */
   closeUploadModal(): void {
     this.showUploadModal.set(false);
+    this.loadFiles(); // Rafraîchir la liste après fermeture
   }
 
   /**
    * Callback appelé après l'upload réussi d'un fichier
    */
   onFileUploaded(): void {
-    this.closeUploadModal();
-    this.loadFiles(); // Rafraîchir la liste
     this.snackBar.open('Fichier uploadé avec succès', 'Fermer', {
       duration: 3000
     });

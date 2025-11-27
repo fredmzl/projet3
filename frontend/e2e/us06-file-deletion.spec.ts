@@ -1,10 +1,14 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test-users';
 
 // Déclarer Buffer pour TypeScript (disponible globalement dans Node.js)
 declare const Buffer: any;
 
 /**
  * Tests end-to-end pour l'US06 : Suppression de fichier
+ * 
+ * Utilise les données du bootstrap:
+ * - alice@example.com / password (4 fichiers)
+ * - bob@example.com / password (3 fichiers)
  * 
  * Scénarios testés :
  * - Suppression d'un fichier avec confirmation
@@ -16,31 +20,16 @@ declare const Buffer: any;
 test.describe('US06 - Suppression de fichier', () => {
   const baseURL = 'http://localhost:4200';
   const apiURL = 'http://localhost:3000/api';
-  
-  const testUser = {
-    email: 'testuser@example.net',
-    password: 'password'
-  };
 
   let authToken: string;
   let testFileId: string;
 
-  test.beforeEach(async ({ page }) => {
-    // 0. S'assurer que l'utilisateur de test existe (ignorer erreur si déjà créé)
-    const registerResponse = await page.request.post(`${apiURL}/auth/register`, {
-      data: {
-        login: testUser.email,
-        password: testUser.password
-      },
-      failOnStatusCode: false // Ne pas échouer si l'utilisateur existe déjà
-    });
-    // Ignorer le résultat (201 si créé, 400 si existe déjà, les deux sont OK)
-
-    // 1. Login pour obtenir le token
+  test.beforeEach(async ({ page, testUsers }) => {
+    // 1. Login pour obtenir le token (utilise Alice du bootstrap)
     const loginResponse = await page.request.post(`${apiURL}/auth/login`, {
       data: {
-        login: testUser.email,
-        password: testUser.password
+        login: testUsers.alice.login,
+        password: testUsers.alice.password
       }
     });
     
@@ -104,7 +93,7 @@ test.describe('US06 - Suppression de fichier', () => {
     }
   });
 
-  test('devrait afficher le bouton Supprimer pour chaque fichier', async ({ page }) => {
+  test('devrait afficher le bouton Supprimer pour chaque fichier', async ({ page, testUsers }) => {
     // Attendre que la liste soit chargée
     await page.waitForSelector('.file-row', { timeout: 5000 });
 
@@ -113,7 +102,7 @@ test.describe('US06 - Suppression de fichier', () => {
     await expect(deleteButtons.first()).toBeVisible();
   });
 
-  test('devrait ouvrir la modal de confirmation au clic sur Supprimer', async ({ page }) => {
+  test('devrait ouvrir la modal de confirmation au clic sur Supprimer', async ({ page, testUsers }) => {
     // Attendre le fichier de test
     await page.waitForSelector('.file-row', { timeout: 5000 });
 
@@ -124,7 +113,7 @@ test.describe('US06 - Suppression de fichier', () => {
     await expect(page.locator('h2:has-text("Supprimer le fichier")')).toBeVisible();
   });
 
-  test('devrait afficher le nom du fichier dans la modal de confirmation', async ({ page }) => {
+  test('devrait afficher le nom du fichier dans la modal de confirmation', async ({ page, testUsers }) => {
     await page.waitForSelector('.file-row', { timeout: 5000 });
 
     // Récupérer le nom du fichier
@@ -138,7 +127,7 @@ test.describe('US06 - Suppression de fichier', () => {
     await expect(dialogMessage).toContainText(fileName!);
   });
 
-  test('devrait fermer la modal sans supprimer quand on clique sur Annuler', async ({ page }) => {
+  test('devrait fermer la modal sans supprimer quand on clique sur Annuler', async ({ page, testUsers }) => {
     await page.waitForSelector('.file-row', { timeout: 5000 });
     
     const initialFileCount = await page.locator('.file-row').count();
@@ -158,7 +147,7 @@ test.describe('US06 - Suppression de fichier', () => {
     expect(finalFileCount).toBe(initialFileCount);
   });
 
-  test('devrait gérer l\'erreur 404 (fichier non trouvé)', async ({ page }) => {
+  test('devrait gérer l\'erreur 404 (fichier non trouvé)', async ({ page, testUsers }) => {
     // Mock d'une requête DELETE qui retourne 404
     await page.route('**/api/files/*', async (route) => {
       if (route.request().method() === 'DELETE') {
@@ -187,7 +176,7 @@ test.describe('US06 - Suppression de fichier', () => {
     await expect(page.locator('.mat-mdc-snack-bar-label').first()).toContainText('Fichier non trouvé');
   });
 
-  test('devrait gérer l\'erreur 403 (non autorisé)', async ({ page }) => {
+  test('devrait gérer l\'erreur 403 (non autorisé)', async ({ page, testUsers }) => {
     // Mock d'une requête DELETE qui retourne 403
     await page.route('**/api/files/*', async (route) => {
       if (route.request().method() === 'DELETE') {
@@ -216,7 +205,7 @@ test.describe('US06 - Suppression de fichier', () => {
     await expect(page.locator('.mat-mdc-snack-bar-label').first()).toContainText('autorisation');
   });
 
-  test('devrait rediriger vers login en cas d\'erreur 401', async ({ page }) => {
+  test('devrait rediriger vers login en cas d\'erreur 401', async ({ page, testUsers }) => {
     // Mock d'une requête DELETE qui retourne 401
     await page.route('**/api/files/*', async (route) => {
       if (route.request().method() === 'DELETE') {

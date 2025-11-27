@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test-users';
 
-test('Test simple login manuel', async ({ page }) => {
+test('Test simple login manuel', async ({ page, testUsers }) => {
   test.setTimeout(60000); // Augmenter le timeout pour le debug
 
   // Aller sur la page de login
@@ -9,9 +9,9 @@ test('Test simple login manuel', async ({ page }) => {
   // Attendre que la page soit chargée
   await page.waitForLoadState('networkidle');
   
-  // Remplir le formulaire
-  await page.fill('input[type="email"]', 'testuser@example.net');
-  await page.fill('input[type="password"]', 'password');
+  // Remplir le formulaire avec les données du bootstrap (Alice)
+  await page.fill('input[type="email"]', testUsers.alice.login);
+  await page.fill('input[type="password"]', testUsers.alice.password);
     
   // Écouter les requêtes réseau
   page.on('response', response => {

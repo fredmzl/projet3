@@ -1,8 +1,12 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test-users';
 import * as path from 'path';
 
 /**
  * Tests E2E pour US04 - Upload de fichiers
+ * 
+ * Utilise les données du bootstrap:
+ * - alice@example.com / password (4 fichiers)
+ * - bob@example.com / password (3 fichiers)
  * 
  * Scénarios testés :
  * 1. Accès à la page files (protégée par auth)
@@ -15,14 +19,14 @@ import * as path from 'path';
 
 test.describe('US04 - Upload de fichiers', () => {
   
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page, testUsers }) => {
     // Navigation vers la page de login
     await page.goto('/login');
     
-    // Se connecter avec l'utilisateur testuser@example.net
+    // Se connecter avec l'utilisateur Alice du bootstrap
     await page.waitForSelector('input[type="email"]', { timeout: 10000 });
-    await page.fill('input[type="email"]', 'testuser@example.net');
-    await page.fill('input[type="password"]', 'password');
+    await page.fill('input[type="email"]', testUsers.alice.login);
+    await page.fill('input[type="password"]', testUsers.alice.password);
     
     // Cliquer sur le bouton de connexion
     await page.getByRole('button', { name: /Connexion/i }).click();
@@ -31,7 +35,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await page.waitForURL(/\/files/, { timeout: 15000 });
   });
 
-  test('devrait ouvrir le modal d\'upload', async ({ page }) => {
+  test('devrait ouvrir le modal d\'upload', async ({ page, testUsers }) => {
     // Cliquer sur le bouton "Ajouter des fichiers"
     await page.click('button:has-text("Ajouter des fichiers")');
     
@@ -40,7 +44,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText(/Glissez-déposez/i)).toBeVisible();
   });
 
-  test('devrait uploader un fichier avec succès', async ({ page }) => {
+  test('devrait uploader un fichier avec succès', async ({ page, testUsers }) => {
     // Ouvrir le modal
     await page.click('button:has-text("Ajouter des fichiers")');
     
@@ -71,7 +75,7 @@ test.describe('US04 - Upload de fichiers', () => {
     expect(linkValue).toContain('http');
   });
 
-  test('devrait uploader un fichier avec mot de passe', async ({ page }) => {
+  test('devrait uploader un fichier avec mot de passe', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     const testFilePath = path.join(__dirname, 'fixtures', 'test-file.txt');
@@ -93,7 +97,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText('Fichier uploadé avec succès')).toBeVisible({ timeout: 10000 });
   });
 
-  test('devrait valider le mot de passe (minimum 6 caractères)', async ({ page }) => {
+  test('devrait valider le mot de passe (minimum 6 caractères)', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     const testFilePath = path.join(__dirname, 'fixtures', 'test-file.txt');
@@ -114,7 +118,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(uploadButton).toBeDisabled();
   });
 
-  test('devrait gérer l\'erreur fichier trop gros', async ({ page }) => {
+  test('devrait gérer l\'erreur fichier trop gros', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     // Créer un fichier simulant 1.5 GB (on va simuler côté frontend)
@@ -137,7 +141,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText(/1 GB/i)).toBeVisible();
   });
 
-  test('devrait gérer l\'erreur type de fichier non autorisé', async ({ page }) => {
+  test('devrait gérer l\'erreur type de fichier non autorisé', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     const testFilePath = path.join(__dirname, 'fixtures', 'test-file.txt');
@@ -159,7 +163,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText(/exécutables et scripts/i)).toBeVisible();
   });
 
-  test('devrait fermer le modal après succès', async ({ page }) => {
+  test('devrait fermer le modal après succès', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     const testFilePath = path.join(__dirname, 'fixtures', 'test-file.txt');
@@ -178,7 +182,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText('Uploader un fichier')).not.toBeVisible();
   });
 
-  test('devrait permettre d\'annuler l\'upload', async ({ page }) => {
+  test('devrait permettre d\'annuler l\'upload', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     const testFilePath = path.join(__dirname, 'fixtures', 'test-file.txt');
@@ -192,7 +196,7 @@ test.describe('US04 - Upload de fichiers', () => {
     await expect(page.getByText('Uploader un fichier')).not.toBeVisible();
   });
 
-  test('devrait supporter le drag and drop', async ({ page }) => {
+  test('devrait supporter le drag and drop', async ({ page, testUsers }) => {
     await page.click('button:has-text("Ajouter des fichiers")');
     
     // Simuler un drag and drop (difficile en Playwright, on vérifie juste la présence de la zone)

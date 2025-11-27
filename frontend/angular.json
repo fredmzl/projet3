@@ -94,6 +94,9 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "codeCoverageExclude": [
+              "src/app/core/models/**/*.ts"
             ]
           }
         }
