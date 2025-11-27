@@ -5,7 +5,6 @@ import com.openclassrooms.datashare.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -42,13 +41,9 @@ public class UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (passwordEncoder.matches(password, user.getPassword())) {
-                log.info("Login successful for user: {}", login);
-                UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                        .username(login)
-                        .password(user.getPassword())
-                        .authorities("USER")
-                        .build();
-                return jwtService.generateToken(userDetails);
+                log.info("Login successful for user: {} (id={})", login, user.getId());
+                // Utiliser directement l'entité User qui implémente UserDetails
+                return jwtService.generateToken(user);
             }
         }
         log.warn("Login failed for user: {}", login);

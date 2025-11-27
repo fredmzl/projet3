@@ -9,6 +9,10 @@ curl https://mise.run | sh
 echo "eval \"\$(/home/fred/.local/bin/mise activate bash)\"" >> ~/.bashrc
 source ~/.bashrc
 mise doctor # to verify installation
+mise use -g usage # to enable auto-completion and help
+```
+
+Then, in the project root, run:
 ```
 
 bootstrap documentation site
@@ -39,6 +43,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise run backend:build` | Compile le projet backend avec Maven |
 | `mise run backend:start` | Démarre l'application Spring Boot (port 3000) |
 | `mise run backend:stop` | Arrête l'application Spring Boot |
+| `mise run backend:restart` | Redémarre l'application Spring Boot |
 | `mise run backend:test` | Lance les tests unitaires et d'intégration |
 | `mise run backend:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
 | `mise run backend:log` | Affiche les logs du backend en temps réel |
@@ -48,7 +53,8 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | Commande | Description |
 |----------|-------------|
 | `mise run database:show` | Affiche le contenu des tables de la base de données |
-| `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données postgresql |
+| `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
+| `mise run database:bootstrap` | Crée des utilisateurs et fichiers de test (testuser, listuser, alice) |
 
 ### Configuration
 

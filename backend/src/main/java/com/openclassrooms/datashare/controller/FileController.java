@@ -1,5 +1,6 @@
 package com.openclassrooms.datashare.controller;
 
+import com.openclassrooms.datashare.dto.FileListResponseDto;
 import com.openclassrooms.datashare.dto.FileUploadRequestDto;
 import com.openclassrooms.datashare.dto.FileUploadResponseDto;
 import com.openclassrooms.datashare.entities.User;
@@ -22,6 +23,7 @@ import java.util.Map;
  * Contrôleur REST pour la gestion des fichiers.
  * <p>
  * Endpoints :
+ * - GET /api/files : Liste paginée des fichiers de l'utilisateur
  * - POST /api/files : Upload d'un fichier avec authentification JWT
  * <p>
  * Sécurité : Tous les endpoints requièrent une authentification JWT valide.
@@ -33,6 +35,50 @@ import java.util.Map;
 public class FileController {
 
     private final FileService fileService;
+
+    /**
+     * Liste les fichiers de l'utilisateur connecté avec pagination.
+     * <p>
+     * Authentification requise via JWT.
+     * 
+     * @param page Le numéro de page (commence à 0, défaut: 0)
+     * @param size Le nombre d'éléments par page (min: 1, max: 100, défaut: 20)
+     * @param sort Le critère de tri (défaut: "createdAt,desc")
+     * @param includeExpired Inclure les fichiers expirés (défaut: true)
+     * @param userDetails L'utilisateur authentifié extrait du JWT
+     * @return 200 OK avec FileListResponseDto
+     */
+    @GetMapping
+    public ResponseEntity<?> listFiles(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "20") Integer size,
+            @RequestParam(required = false, defaultValue = "createdAt,desc") String sort,
+            @RequestParam(required = false, defaultValue = "true") Boolean includeExpired,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        
+        try {
+            // Extraire User depuis UserDetails
+            if (!(userDetails instanceof User)) {
+                log.error("UserDetails is not an instance of User");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("error", "Authentication error"));
+            }
+            
+            User user = (User) userDetails;
+            log.info("List files request from user: {} (id={})", user.getLogin(), user.getId());
+            
+            // Appeler FileService.listUserFiles()
+            FileListResponseDto response = fileService.listUserFiles(user, page, size, sort, includeExpired);
+            
+            // Retourner 200 OK avec FileListResponseDto
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Unexpected error during file listing", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred"));
+        }
+    }
 
     /**
      * Upload un fichier avec métadonnées.

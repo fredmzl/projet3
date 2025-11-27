@@ -7,6 +7,7 @@
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/configuration/security/SpringSecurityConfig.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/FileController.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/controller/UserController.java
+/home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileListResponseDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileMetadataDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileUploadRequestDto.java
 /home/fred/oc/clean-projet3/projet3/backend/src/main/java/com/openclassrooms/datashare/dto/FileUploadResponseDto.java

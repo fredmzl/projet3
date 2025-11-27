@@ -1,5 +1,7 @@
 package com.openclassrooms.datashare.service;
 
+import com.openclassrooms.datashare.dto.FileListResponseDto;
+import com.openclassrooms.datashare.dto.FileMetadataDto;
 import com.openclassrooms.datashare.dto.FileUploadRequestDto;
 import com.openclassrooms.datashare.dto.FileUploadResponseDto;
 import com.openclassrooms.datashare.entities.File;
@@ -10,6 +12,10 @@ import com.openclassrooms.datashare.validation.MimeTypeValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service de gestion de la logique métier pour l'upload de fichiers.
@@ -139,6 +147,99 @@ public class FileService {
             savedFile.getFilename(), savedFile.getFileSize());
         
         return response;
+    }
+
+    /**
+     * Liste les fichiers d'un utilisateur avec pagination.
+     * 
+     * @param user L'utilisateur dont on veut lister les fichiers
+     * @param page Le numéro de page (commence à 0)
+     * @param size Le nombre d'éléments par page (max 100)
+     * @param sortParam Le critère de tri (ex: "createdAt,desc")
+     * @param includeExpired Inclure ou non les fichiers expirés
+     * @return Le DTO de réponse avec la liste paginée et les infos de pagination
+     */
+    @Transactional(readOnly = true)
+    public FileListResponseDto listUserFiles(User user, Integer page, Integer size, String sortParam, Boolean includeExpired) {
+        log.info("Listing files for user: {} (id={}) - page={}, size={}, sort={}, includeExpired={}", 
+            user.getLogin(), user.getId(), page, size, sortParam, includeExpired);
+
+        // Valider et normaliser les paramètres
+        int pageNumber = page != null ? Math.max(0, page) : 0;
+        int pageSize = size != null ? Math.min(100, Math.max(1, size)) : 20;
+        boolean showExpired = includeExpired != null ? includeExpired : true;
+
+        // Parser le paramètre de tri (format: "property,direction")
+        Sort sort = parseSortParameter(sortParam);
+        
+        // Créer Pageable
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
+        // Récupérer les fichiers avec pagination
+        Page<File> filePage;
+        if (showExpired) {
+            // Inclure tous les fichiers (expirés ou non)
+            filePage = fileRepository.findAllByUser_Id(user.getId(), pageable);
+        } else {
+            // Exclure les fichiers expirés
+            filePage = fileRepository.findNonExpiredByUserId(user.getId(), LocalDateTime.now(), pageable);
+        }
+
+        // Mapper vers DTOs
+        List<FileMetadataDto> fileDtos = filePage.getContent().stream()
+            .map(file -> {
+                FileMetadataDto dto = fileMapper.toMetadataDto(file);
+                // Ajouter l'URL de téléchargement
+                dto.setDownloadUrl(buildDownloadUrl(file.getDownloadToken()));
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        // Construire la réponse
+        FileListResponseDto response = new FileListResponseDto();
+        response.setFiles(fileDtos);
+        response.setTotalElements(filePage.getTotalElements());
+        response.setTotalPages(filePage.getTotalPages());
+        response.setCurrentPage(filePage.getNumber());
+        response.setPageSize(filePage.getSize());
+
+        log.info("Found {} files for user {} (page {}/{})", 
+            fileDtos.size(), user.getId(), pageNumber + 1, filePage.getTotalPages());
+
+        return response;
+    }
+
+    /**
+     * Parse le paramètre de tri au format "property,direction".
+     * 
+     * @param sortParam Le paramètre de tri (ex: "createdAt,desc")
+     * @return L'objet Sort configuré
+     */
+    private Sort parseSortParameter(String sortParam) {
+        if (sortParam == null || sortParam.isBlank()) {
+            // Tri par défaut : createdAt desc
+            return Sort.by(Sort.Direction.DESC, "createdAt");
+        }
+
+        String[] parts = sortParam.split(",");
+        String property = parts[0].trim();
+        Sort.Direction direction = Sort.Direction.DESC;
+
+        if (parts.length > 1) {
+            String directionStr = parts[1].trim().toLowerCase();
+            if ("asc".equals(directionStr)) {
+                direction = Sort.Direction.ASC;
+            }
+        }
+
+        // Valider les propriétés autorisées
+        List<String> allowedProperties = List.of("createdAt", "fileSize", "originalFilename", "expirationDate");
+        if (!allowedProperties.contains(property)) {
+            log.warn("Invalid sort property: {}, using default 'createdAt'", property);
+            property = "createdAt";
+        }
+
+        return Sort.by(direction, property);
     }
 
     /**
