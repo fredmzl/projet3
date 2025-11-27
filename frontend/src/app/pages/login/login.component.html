@@ -45,7 +45,7 @@
 
         <!-- Message d'erreur global -->
         @if (error()) {
-          <app-callout [message]="error()!" type="error" />
+          <app-callout type="error">{{ error() }}</app-callout>
         }
 
         <!-- Lien vers inscription -->

@@ -1,0 +1,47 @@
+<div class="file-row" [class.file-row--expired]="file.isExpired">
+  <!-- Icône et nom du fichier -->
+  <div class="file-row__left">
+    <mat-icon class="file-row__icon">{{ fileIcon }}</mat-icon>
+    <div class="file-row__info">
+      <div class="file-row__name-wrapper">
+        <span class="file-row__name" [matTooltip]="file.filename">
+          {{ file.filename }}
+        </span>
+        @if (file.hasPassword) {
+          <mat-icon class="file-row__lock" matTooltip="Protégé par mot de passe">
+            lock
+          </mat-icon>
+        }
+      </div>
+      <span class="file-row__status" [ngClass]="expirationBadgeClass">
+        {{ expirationText }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Actions à droite -->
+  <div class="file-row__right">
+    @if (file.isExpired) {
+      <span class="file-row__expired-message">
+        Ce fichier a expiré, il n'est plus stocké chez nous
+      </span>
+    } @else {
+      <button 
+        mat-stroked-button 
+        color="primary"
+        class="file-row__action-btn"
+        (click)="onDownload()">
+        <mat-icon>launch</mat-icon>
+        Accéder
+      </button>
+    }
+    <button 
+      mat-stroked-button 
+      color="warn"
+      class="file-row__action-btn"
+      (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+      Supprimer
+    </button>
+  </div>
+</div>

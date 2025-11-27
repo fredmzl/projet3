@@ -1,55 +1,129 @@
-<div class="files-container">
-  <mat-toolbar color="primary">
-    <span>DataShare - Mes Fichiers</span>
-    <span class="spacer"></span>
-    @if (authService.currentUser(); as user) {
-      <span class="user-info">
-        <mat-icon>account_circle</mat-icon>
-        {{ user.email }}
-      </span>
-    }
-    <button mat-button (click)="logout()">
-      <mat-icon>logout</mat-icon>
-      Déconnexion
-    </button>
-  </mat-toolbar>
-
-  <div class="content">
-    <div class="files-header">
-      <button 
-        mat-raised-button 
-        color="primary"
-        (click)="openUploadModal()"
-        aria-label="Ajouter des fichiers">
-        <mat-icon>cloud_upload</mat-icon>
-        Ajouter des fichiers
-      </button>
+<div class="files-page">
+  <!-- Barre latérale gauche -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-logo">DataShare</span>
     </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link sidebar-link--active">
+        Mes fichiers
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="copyright">Copyright DataShare® 2025</span>
+    </div>
+  </aside>
 
-    <!-- État vide -->
-    <mat-card class="empty-state">
-      <mat-card-content>
-        <div class="empty-content">
-          <mat-icon class="empty-icon">inbox</mat-icon>
-          <h2>Aucun fichier</h2>
+  <!-- Contenu principal -->
+  <div class="main-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <h1 class="page-title"></h1>
+      <div class="header-actions">
+        <button 
+          mat-raised-button
+          class="upload-button"
+          (click)="openUploadModal()"
+          aria-label="Ajouter des fichiers">
+          Ajouter des fichiers
+        </button>
+        @if (authService.currentUser(); as user) {
+          <span class="user-email">{{ user.email }}</span>
+        }
+        <button 
+          mat-icon-button
+          class="logout-button"
+          (click)="logout()"
+          aria-label="Déconnexion">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenu -->
+    <main class="content">
+      <!-- Erreur -->
+      @if (error()) {
+        <app-callout type="error">
+          {{ error() }}
+        </app-callout>
+      }
+
+      <!-- Loading -->
+      @if (isLoading()) {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Chargement des fichiers...</p>
+        </div>
+      }
+
+      <!-- État vide -->
+      @if (!isLoading() && files().length === 0 && !error()) {
+        <div class="empty-state">
+          <mat-icon class="empty-icon">folder_open</mat-icon>
+          <h2>Aucun fichier uploadé</h2>
           <p class="text-muted">
             Commencez par uploader votre premier fichier pour le partager de manière sécurisée.
           </p>
           <button 
-            mat-raised-button 
-            color="primary"
+            mat-raised-button
+            class="upload-button"
             (click)="openUploadModal()">
-            <mat-icon>cloud_upload</mat-icon>
             Uploader mon premier fichier
           </button>
         </div>
-      </mat-card-content>
-    </mat-card>
+      }
 
-    <!-- Liste des fichiers (à implémenter dans US05) -->
-    <!-- <div class="files-list">
-      TODO: afficher la liste des fichiers
-    </div> -->
+      <!-- Liste des fichiers -->
+      @if (!isLoading() && files().length > 0) {
+        <!-- Filtres Tous/Actifs/Expirés -->
+        <div class="filters">
+          <mat-button-toggle-group 
+            [value]="currentFilter()"
+            (change)="onFilterChange($event.value)"
+            aria-label="Filtrer les fichiers">
+            <mat-button-toggle value="all">
+              Tous
+            </mat-button-toggle>
+            <mat-button-toggle value="active">
+              Actifs
+            </mat-button-toggle>
+            <mat-button-toggle value="expired">
+              Expiré
+            </mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+
+        <!-- Liste de fichiers -->
+        @if (filteredFiles().length > 0) {
+          <div class="files-list">
+            @for (file of filteredFiles(); track file.id) {
+              <app-file-card
+                [file]="file"
+                (download)="onDownloadFile($event)"
+                (delete)="onDeleteFile($event)">
+              </app-file-card>
+            }
+          </div>
+
+          <!-- Pagination -->
+          @if (totalPages() > 1) {
+            <mat-paginator
+              [length]="totalElements()"
+              [pageSize]="pageSize()"
+              [pageIndex]="currentPage()"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="onPageChange($event)"
+              aria-label="Sélectionner la page">
+            </mat-paginator>
+          }
+        } @else {
+          <app-callout type="info">
+            Aucun fichier ne correspond au filtre sélectionné.
+          </app-callout>
+        }
+      }
+    </main>
   </div>
 </div>
 

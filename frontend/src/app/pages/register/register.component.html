@@ -68,12 +68,12 @@
 
         <!-- Message de succès -->
         @if (successMessage()) {
-          <app-callout [message]="successMessage()!" type="info" />
+          <app-callout type="info">{{ successMessage() }}</app-callout>
         }
 
-        <!-- Message d'erreur global -->
+        <!-- Message d'erreur -->
         @if (errorMessage()) {
-          <app-callout [message]="errorMessage()!" type="error" />
+          <app-callout type="error">{{ errorMessage() }}</app-callout>
         }
 
         <!-- Lien vers connexion -->

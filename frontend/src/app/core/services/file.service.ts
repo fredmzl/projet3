@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { FileListResponse, FileListParams } from '../models/file.model';
 
 export interface FileUploadRequest {
   file: File;
@@ -86,12 +87,27 @@ export class FileService {
   }
 
   /**
-   * Récupère la liste des fichiers de l'utilisateur
-   * TODO: Implémenter dans US05
+   * Récupère la liste des fichiers de l'utilisateur avec pagination
+   * @param params Paramètres de pagination et filtrage
+   * @returns Observable avec la liste paginée des fichiers
    */
-  getUserFiles(): Observable<FileMetadata[]> {
-    // return this.http.get<FileMetadata[]>(this.apiUrl);
-    throw new Error('Not implemented - US05');
+  getFiles(params?: FileListParams): Observable<FileListResponse> {
+    let httpParams = new HttpParams();
+    
+    if (params?.page !== undefined) {
+      httpParams = httpParams.set('page', params.page.toString());
+    }
+    if (params?.size !== undefined) {
+      httpParams = httpParams.set('size', params.size.toString());
+    }
+    if (params?.sort) {
+      httpParams = httpParams.set('sort', params.sort);
+    }
+    if (params?.includeExpired !== undefined) {
+      httpParams = httpParams.set('includeExpired', params.includeExpired.toString());
+    }
+
+    return this.http.get<FileListResponse>(this.apiUrl, { params: httpParams });
   }
 
   /**
