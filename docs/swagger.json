@@ -1,0 +1,1336 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "DataShare API",
+    "description": "API REST pour la plateforme de transfert sécurisé de fichiers DataShare.\n\n## Fonctionnalités\n- Authentification JWT\n- Upload de fichiers (max 1 GB)\n- Génération de liens de téléchargement uniques\n- Protection par mot de passe optionnelle\n- Gestion de l'expiration automatique (1-7 jours)\n- Historique des fichiers utilisateur\n\n## Authentification\nLa plupart des endpoints nécessitent un token JWT dans le header `Authorization: Bearer <token>`.\nLe token est obtenu via l'endpoint `/api/auth/login` et est valide 24 heures.\n\n## Modèle de données\n- **users** : Comptes utilisateurs avec authentification\n- **files** : Métadonnées des fichiers uploadés (stockage physique séparé)\n\n## Sécurité\n- Mots de passe hashés avec bcrypt\n- Tokens JWT signés\n- Tokens de téléchargement UUID non prédictibles\n- Protection par mot de passe optionnelle sur les fichiers\n",
+    "contact": {
+      "name": "DataShare Support",
+      "email": "support@datashare.fr"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Serveur de développement local"
+    },
+    {
+      "url": "https://api.datashare.fr",
+      "description": "Serveur de production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Gestion de l'authentification et des comptes utilisateurs"
+    },
+    {
+      "name": "Files",
+      "description": "Upload, consultation et suppression des fichiers (endpoints protégés)"
+    },
+    {
+      "name": "Download",
+      "description": "Téléchargement de fichiers via lien public (accès anonyme)"
+    }
+  ],
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Créer un nouveau compte utilisateur",
+        "description": "Permet à un utilisateur de créer un compte avec un email et un mot de passe.\n\n**Règles de validation :**\n- L'email doit être unique dans le système\n- Le mot de passe doit contenir au moins 8 caractères\n- L'email doit être au format valide\n\nLe mot de passe est automatiquement hashé avec bcrypt avant stockage.\n",
+        "operationId": "registerUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "examples": {
+                "validRegistration": {
+                  "summary": "Inscription valide",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "SecurePass123!"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Compte créé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Création réussie",
+                    "value": {
+                      "message": "Compte créé avec succès",
+                      "userId": "550e8400-e29b-41d4-a716-446655440000",
+                      "email": "user@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidEmail": {
+                    "summary": "Email invalide",
+                    "value": {
+                      "error": "Bad Request",
+                      "message": "L'email doit être au format valide",
+                      "timestamp": "2025-01-15T10:30:00.000Z"
+                    }
+                  },
+                  "weakPassword": {
+                    "summary": "Mot de passe trop faible",
+                    "value": {
+                      "error": "Bad Request",
+                      "message": "Le mot de passe doit contenir au moins 8 caractères",
+                      "timestamp": "2025-01-15T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email déjà utilisé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "emailExists": {
+                    "summary": "Email déjà enregistré",
+                    "value": {
+                      "error": "Conflict",
+                      "message": "Un compte existe déjà avec cet email",
+                      "timestamp": "2025-01-15T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Se connecter",
+        "description": "Authentifie un utilisateur et retourne un token JWT.\n\n**Token JWT :**\n- Validité : 24 heures\n- Format : `Authorization: Bearer <token>`\n- Contenu : userId, email, iat, exp\n\nLe token doit être inclus dans le header Authorization des requêtes protégées.\n",
+        "operationId": "loginUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "examples": {
+                "validLogin": {
+                  "summary": "Connexion valide",
+                  "value": {
+                    "email": "user@example.com",
+                    "password": "SecurePass123!"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Connexion réussie",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "JWT généré",
+                    "value": {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDUzMzQ0MDAsImV4cCI6MTcwNTQyMDgwMH0.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
+                      "user": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "email": "user@example.com",
+                        "createdAt": "2025-01-10T08:00:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Identifiants invalides",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidCredentials": {
+                    "summary": "Email ou mot de passe incorrect",
+                    "value": {
+                      "error": "Unauthorized",
+                      "message": "Email ou mot de passe incorrect",
+                      "timestamp": "2025-01-15T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/files": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Lister les fichiers de l'utilisateur",
+        "description": "Retourne la liste paginée de tous les fichiers uploadés par l'utilisateur connecté.\n\n**Informations retournées :**\n- Métadonnées complètes de chaque fichier\n- État d'expiration (actif/expiré)\n- Présence de mot de passe\n- Lien de téléchargement\n\n**Tri par défaut :** Date de création décroissante (plus récent d'abord)\n",
+        "operationId": "listUserFiles",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numéro de page (commence à 0)",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer",
+              "default": 0
+            },
+            "example": 0
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Nombre d'éléments par page",
+            "required": false,
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "type": "integer",
+              "default": 20
+            },
+            "example": 20
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Critère de tri",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "createdAt,desc",
+              "enum": [
+                "createdAt,desc",
+                "createdAt,asc",
+                "fileSize,desc",
+                "fileSize,asc",
+                "originalFilename,asc"
+              ]
+            },
+            "example": "createdAt,desc"
+          },
+          {
+            "name": "includeExpired",
+            "in": "query",
+            "description": "Inclure les fichiers expirés",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "example": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des fichiers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileListResponse"
+                },
+                "examples": {
+                  "withFiles": {
+                    "summary": "Liste avec plusieurs fichiers",
+                    "value": {
+                      "files": [
+                        {
+                          "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+                          "originalFilename": "rapport-financier-2024.pdf",
+                          "fileSize": 2728960,
+                          "mimeType": "application/pdf",
+                          "downloadLink": "https://datashare.fr/download/a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d",
+                          "expirationDate": "2025-01-22T10:45:00.000Z",
+                          "isExpired": false,
+                          "hasPassword": true,
+                          "createdAt": "2025-01-15T10:45:00.000Z"
+                        },
+                        {
+                          "id": "8d0f7780-8536-51ef-c9e4-3d0g6b2g8c5e",
+                          "originalFilename": "vacation-video.mp4",
+                          "fileSize": 524288000,
+                          "mimeType": "video/mp4",
+                          "downloadLink": "https://datashare.fr/download/b4g9c3d0-5f8b-52g7-c9f4-3e0h7c3h9d6f",
+                          "expirationDate": "2025-01-14T08:30:00.000Z",
+                          "isExpired": true,
+                          "hasPassword": false,
+                          "createdAt": "2025-01-07T08:30:00.000Z"
+                        }
+                      ],
+                      "totalElements": 2,
+                      "totalPages": 1,
+                      "currentPage": 0,
+                      "pageSize": 20
+                    }
+                  },
+                  "empty": {
+                    "summary": "Aucun fichier",
+                    "value": {
+                      "files": [],
+                      "totalElements": 0,
+                      "totalPages": 0,
+                      "currentPage": 0,
+                      "pageSize": 20
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Uploader un fichier",
+        "description": "Upload un fichier avec métadonnées optionnelles.\n\n**Processus :**\n1. Le fichier est stocké sur le système de fichiers\n2. Les métadonnées sont enregistrées en base de données\n3. Un token de téléchargement unique est généré\n4. Un lien de partage est retourné\n\n**Limites et contraintes :**\n- Taille maximale : 1 GB (1073741824 octets)\n- Tous types de fichiers acceptés\n- Expiration : 1 à 7 jours (défaut 7 jours)\n- Mot de passe optionnel (min 6 caractères)\n\n**Structure de stockage :**\n/var/datashare/uploads/\n  └── YYYY/MM/DD/\n      └── user-uuid/\n          └── token-filename.ext\n",
+        "operationId": "uploadFile",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/api_files_body"
+              },
+              "encoding": {
+                "file": {
+                  "contentType": "application/octet-stream"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Fichier uploadé avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponse"
+                },
+                "examples": {
+                  "successWithoutPassword": {
+                    "summary": "Upload sans mot de passe",
+                    "value": {
+                      "message": "Fichier uploadé avec succès",
+                      "file": {
+                        "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+                        "originalFilename": "rapport-financier-2024.pdf",
+                        "fileSize": 2728960,
+                        "mimeType": "application/pdf",
+                        "downloadLink": "https://datashare.fr/download/a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d",
+                        "expirationDate": "2025-01-22T10:45:00.000Z",
+                        "hasPassword": false,
+                        "createdAt": "2025-01-15T10:45:00.000Z"
+                      }
+                    }
+                  },
+                  "successWithPassword": {
+                    "summary": "Upload avec mot de passe",
+                    "value": {
+                      "message": "Fichier uploadé avec succès",
+                      "file": {
+                        "id": "8d0f7780-8536-51ef-c9e4-3d0g6b2g8c5e",
+                        "originalFilename": "contrat-confidentiel.pdf",
+                        "fileSize": 1048576,
+                        "mimeType": "application/pdf",
+                        "downloadLink": "https://datashare.fr/download/b4g9c3d0-5f8b-52g7-c9f4-3e0h7c3h9d6f",
+                        "expirationDate": "2025-01-17T14:30:00.000Z",
+                        "hasPassword": true,
+                        "createdAt": "2025-01-15T14:30:00.000Z"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requête invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "noFile": {
+                    "summary": "Aucun fichier fourni",
+                    "value": {
+                      "error": "Bad Request",
+                      "message": "Aucun fichier n'a été fourni",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  },
+                  "invalidExpiration": {
+                    "summary": "Expiration invalide",
+                    "value": {
+                      "error": "Bad Request",
+                      "message": "La durée d'expiration doit être entre 1 et 7 jours",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "413": {
+            "description": "Fichier trop volumineux",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "fileTooLarge": {
+                    "summary": "Dépassement de la limite",
+                    "value": {
+                      "error": "Payload Too Large",
+                      "message": "La taille du fichier ne doit pas dépasser 1 GB",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/files/{fileId}": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Obtenir les détails d'un fichier",
+        "description": "Retourne les informations détaillées d'un fichier spécifique.\n\n**Vérifications :**\n- L'utilisateur doit être le propriétaire du fichier\n- Le fichier doit exister\n\n**Informations supplémentaires retournées :**\n- Chemin de stockage (filepath)\n- Date de dernière modification (updatedAt)\n",
+        "operationId": "getFileDetails",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "Identifiant UUID du fichier",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Détails du fichier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileDetailsResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Fichier trouvé",
+                    "value": {
+                      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
+                      "originalFilename": "rapport-financier-2024.pdf",
+                      "filename": "a3f8b2c9-rapport-financier-2024.pdf",
+                      "filepath": "/var/datashare/uploads/2025/01/15/550e8400-e29b-41d4-a716-446655440000/a3f8b2c9-rapport-financier-2024.pdf",
+                      "fileSize": 2728960,
+                      "mimeType": "application/pdf",
+                      "downloadLink": "https://datashare.fr/download/a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d",
+                      "downloadToken": "a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d",
+                      "expirationDate": "2025-01-22T10:45:00.000Z",
+                      "isExpired": false,
+                      "hasPassword": true,
+                      "createdAt": "2025-01-15T10:45:00.000Z",
+                      "updatedAt": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "description": "Accès interdit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "notOwner": {
+                    "summary": "Pas le propriétaire",
+                    "value": {
+                      "error": "Forbidden",
+                      "message": "Vous n'êtes pas autorisé à accéder à ce fichier",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fichier non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Fichier inexistant",
+                    "value": {
+                      "error": "Not Found",
+                      "message": "Fichier non trouvé",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "Supprimer un fichier",
+        "description": "Supprime définitivement un fichier et toutes ses métadonnées.\n\n**Actions effectuées :**\n1. Suppression du fichier physique sur le disque\n2. Suppression des métadonnées en base de données\n3. Invalidation du lien de téléchargement\n\n**Cette action est irréversible.**\n\n**Vérifications :**\n- L'utilisateur doit être le propriétaire du fichier\n- Le fichier doit exister\n",
+        "operationId": "deleteFile",
+        "parameters": [
+          {
+            "name": "fileId",
+            "in": "path",
+            "description": "Identifiant UUID du fichier à supprimer",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Fichier supprimé avec succès (pas de contenu retourné)"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "description": "Accès interdit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "notOwner": {
+                    "summary": "Pas le propriétaire",
+                    "value": {
+                      "error": "Forbidden",
+                      "message": "Vous n'êtes pas autorisé à supprimer ce fichier",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Fichier non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "notFound": {
+                    "summary": "Fichier inexistant",
+                    "value": {
+                      "error": "Not Found",
+                      "message": "Fichier non trouvé",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/download/{token}": {
+      "get": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Afficher les informations du fichier",
+        "description": "Retourne les métadonnées publiques du fichier sans le télécharger.\n\n**Accessible sans authentification.**\n\nAffiche :\n- Nom du fichier\n- Taille\n- Type MIME\n- Date d'expiration\n- Présence ou non d'un mot de passe\n\nCette route permet à l'utilisateur de voir les infos avant de télécharger.\n",
+        "operationId": "getFileInfo",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Token unique de téléchargement (UUID)",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+              "type": "string"
+            },
+            "example": "a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Informations du fichier",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileInfoResponse"
+                },
+                "examples": {
+                  "withoutPassword": {
+                    "summary": "Fichier sans mot de passe",
+                    "value": {
+                      "originalFilename": "rapport-financier-2024.pdf",
+                      "fileSize": 2728960,
+                      "mimeType": "application/pdf",
+                      "expirationDate": "2025-01-22T10:45:00.000Z",
+                      "isExpired": false,
+                      "hasPassword": false
+                    }
+                  },
+                  "withPassword": {
+                    "summary": "Fichier protégé",
+                    "value": {
+                      "originalFilename": "contrat-confidentiel.pdf",
+                      "fileSize": 5242880,
+                      "mimeType": "application/pdf",
+                      "expirationDate": "2025-01-22T10:45:00.000Z",
+                      "isExpired": false,
+                      "hasPassword": true,
+                      "message": "Ce fichier est protégé par mot de passe"
+                    }
+                  },
+                  "expiringSoon": {
+                    "summary": "Fichier expirant bientôt",
+                    "value": {
+                      "originalFilename": "temp-document.pdf",
+                      "fileSize": 1048576,
+                      "mimeType": "application/pdf",
+                      "expirationDate": "2025-01-16T08:00:00.000Z",
+                      "isExpired": false,
+                      "hasPassword": false,
+                      "message": "Ce fichier expirera dans moins de 24 heures"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token invalide ou fichier non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidToken": {
+                    "summary": "Token invalide",
+                    "value": {
+                      "error": "Not Found",
+                      "message": "Lien de téléchargement invalide ou fichier non trouvé",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Fichier expiré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "expired": {
+                    "summary": "Lien expiré",
+                    "value": {
+                      "error": "Gone",
+                      "message": "Ce fichier a expiré et n'est plus disponible",
+                      "expirationDate": "2025-01-14T10:45:00.000Z",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Télécharger le fichier",
+        "description": "Télécharge le fichier correspondant au token.\n\n**Accessible sans authentification.**\n\n**Processus :**\n1. Vérification du token\n2. Vérification de la date d'expiration\n3. Vérification du mot de passe (si protégé)\n4. Streaming du fichier\n\n**Cas d'usage :**\n- Sans mot de passe : body vide\n- Avec mot de passe : body JSON avec le mot de passe\n\nLe fichier est retourné en stream pour optimiser la mémoire (pas de chargement complet en RAM).\n",
+        "operationId": "downloadFile",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Token unique de téléchargement",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d"
+          }
+        ],
+        "requestBody": {
+          "description": "Mot de passe si le fichier est protégé (optionnel)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/download_token_body"
+              },
+              "examples": {
+                "withPassword": {
+                  "summary": "Téléchargement avec mot de passe",
+                  "value": {
+                    "password": "secret123"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "Fichier téléchargé",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Nom du fichier original",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"rapport-financier-2024.pdf\""
+                }
+              },
+              "Content-Type": {
+                "description": "Type MIME du fichier",
+                "schema": {
+                  "type": "string",
+                  "example": "application/pdf"
+                }
+              },
+              "Content-Length": {
+                "description": "Taille du fichier en octets",
+                "schema": {
+                  "type": "integer",
+                  "format": "int64",
+                  "example": 2728960
+                }
+              },
+              "X-File-Id": {
+                "description": "Identifiant du fichier (pour analytics)",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+                }
+              }
+            },
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Contenu binaire du fichier",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Mot de passe incorrect ou manquant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "wrongPassword": {
+                    "summary": "Mot de passe incorrect",
+                    "value": {
+                      "error": "Unauthorized",
+                      "message": "Mot de passe incorrect",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  },
+                  "missingPassword": {
+                    "summary": "Mot de passe requis",
+                    "value": {
+                      "error": "Unauthorized",
+                      "message": "Ce fichier est protégé par mot de passe",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token invalide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidToken": {
+                    "summary": "Token invalide",
+                    "value": {
+                      "error": "Not Found",
+                      "message": "Lien de téléchargement invalide",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Fichier expiré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "expired": {
+                    "summary": "Lien expiré",
+                    "value": {
+                      "error": "Gone",
+                      "message": "Ce fichier a expiré et n'est plus disponible",
+                      "expirationDate": "2025-01-14T10:45:00.000Z",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegisterRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "maxLength": 255,
+            "type": "string",
+            "description": "Adresse email unique (sera validée)",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "maxLength": 100,
+            "minLength": 8,
+            "type": "string",
+            "description": "Mot de passe (minimum 8 caractères).\nSera hashé avec bcrypt avant stockage.\n",
+            "format": "password",
+            "example": "SecurePass123!"
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Compte créé avec succès"
+          },
+          "userId": {
+            "type": "string",
+            "description": "Identifiant unique du compte créé",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email du compte",
+            "format": "email",
+            "example": "user@example.com"
+          }
+        }
+      },
+      "LoginRequest": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Adresse email du compte",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mot de passe du compte",
+            "format": "password",
+            "example": "SecurePass123!"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token JWT valide 24 heures",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJpYXQiOjE3MDUzMzQ0MDAsImV4cCI6MTcwNTQyMDgwMH0.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+          },
+          "user": {
+            "$ref": "#/components/schemas/LoginResponse_user"
+          }
+        }
+      },
+      "FileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Message de confirmation",
+            "example": "Fichier uploadé avec succès"
+          },
+          "file": {
+            "$ref": "#/components/schemas/FileMetadata"
+          }
+        }
+      },
+      "FileMetadata": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant unique du fichier en base de données",
+            "format": "uuid",
+            "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+          },
+          "originalFilename": {
+            "type": "string",
+            "description": "Nom original du fichier uploadé par l'utilisateur",
+            "example": "rapport-financier-2024.pdf"
+          },
+          "fileSize": {
+            "maximum": 1073741824,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Taille du fichier en octets",
+            "format": "int64",
+            "example": 2728960
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Type MIME du fichier",
+            "example": "application/pdf"
+          },
+          "downloadLink": {
+            "type": "string",
+            "description": "Lien de téléchargement public complet",
+            "format": "uri",
+            "example": "https://datashare.fr/download/a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d"
+          },
+          "expirationDate": {
+            "type": "string",
+            "description": "Date et heure d'expiration du fichier (ISO 8601)",
+            "format": "date-time",
+            "example": "2025-01-22T10:45:00Z"
+          },
+          "isExpired": {
+            "type": "boolean",
+            "description": "Indique si le fichier est expiré (calculé dynamiquement)",
+            "example": false
+          },
+          "hasPassword": {
+            "type": "boolean",
+            "description": "Indique si le fichier est protégé par mot de passe",
+            "example": false
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date et heure d'upload du fichier (ISO 8601)",
+            "format": "date-time",
+            "example": "2025-01-15T10:45:00Z"
+          }
+        }
+      },
+      "FileListResponse": {
+        "type": "object",
+        "properties": {
+          "files": {
+            "type": "array",
+            "description": "Liste des fichiers de l'utilisateur",
+            "items": {
+              "$ref": "#/components/schemas/FileMetadata"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "description": "Nombre total de fichiers (tous les pages confondues)",
+            "example": 15
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Nombre total de pages",
+            "example": 1
+          },
+          "currentPage": {
+            "type": "integer",
+            "description": "Page actuelle (commence à 0)",
+            "example": 0
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "Nombre d'éléments par page",
+            "example": 20
+          }
+        }
+      },
+      "FileDetailsResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FileMetadata"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "filename": {
+                "type": "string",
+                "description": "Nom du fichier stocké physiquement (avec token)",
+                "example": "a3f8b2c9-rapport-financier-2024.pdf"
+              },
+              "filepath": {
+                "type": "string",
+                "description": "Chemin complet du fichier sur le système de fichiers",
+                "example": "/var/datashare/uploads/2025/01/15/550e8400-e29b-41d4-a716-446655440000/a3f8b2c9-rapport-financier-2024.pdf"
+              },
+              "downloadToken": {
+                "type": "string",
+                "description": "Token de téléchargement (UUID)",
+                "format": "uuid",
+                "example": "a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d"
+              },
+              "updatedAt": {
+                "type": "string",
+                "description": "Date de dernière modification",
+                "format": "date-time",
+                "example": "2025-01-15T10:45:00Z"
+              }
+            }
+          }
+        ]
+      },
+      "FileInfoResponse": {
+        "type": "object",
+        "properties": {
+          "originalFilename": {
+            "type": "string",
+            "description": "Nom original du fichier",
+            "example": "rapport-financier-2024.pdf"
+          },
+          "fileSize": {
+            "type": "integer",
+            "description": "Taille du fichier en octets",
+            "format": "int64",
+            "example": 2728960
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Type MIME du fichier",
+            "example": "application/pdf"
+          },
+          "expirationDate": {
+            "type": "string",
+            "description": "Date d'expiration",
+            "format": "date-time",
+            "example": "2025-01-22T10:45:00Z"
+          },
+          "isExpired": {
+            "type": "boolean",
+            "description": "Fichier expiré ou non",
+            "example": false
+          },
+          "hasPassword": {
+            "type": "boolean",
+            "description": "Fichier protégé par mot de passe",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Message informatif (optionnel)",
+            "example": "Ce fichier est protégé par mot de passe"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "required": [
+          "error",
+          "message",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Type d'erreur HTTP",
+            "example": "Bad Request",
+            "enum": [
+              "Bad Request",
+              "Unauthorized",
+              "Forbidden",
+              "Not Found",
+              "Conflict",
+              "Gone",
+              "Payload Too Large",
+              "Internal Server Error"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Description détaillée de l'erreur",
+            "example": "La taille du fichier ne doit pas dépasser 1 GB"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Horodatage de l'erreur (ISO 8601)",
+            "format": "date-time",
+            "example": "2025-01-15T10:45:00Z"
+          },
+          "path": {
+            "type": "string",
+            "description": "Chemin de l'endpoint appelé (optionnel)",
+            "example": "/api/files"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Détails supplémentaires sur l'erreur (optionnel)",
+            "example": {
+              "field": "email",
+              "rejectedValue": "invalid-email"
+            }
+          }
+        }
+      },
+      "api_files_body": {
+        "required": [
+          "file"
+        ],
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Fichier à uploader (max 1 GB)",
+            "format": "binary"
+          },
+          "password": {
+            "minLength": 6,
+            "type": "string",
+            "description": "Mot de passe optionnel pour protéger le téléchargement.\nSi fourni, il sera hashé avec bcrypt avant stockage.\n",
+            "example": "secret123"
+          },
+          "expirationDays": {
+            "maximum": 7,
+            "minimum": 1,
+            "type": "integer",
+            "description": "Durée de validité du lien en jours (1-7 jours)",
+            "example": 7,
+            "default": 7
+          }
+        }
+      },
+      "download_token_body": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "Mot de passe du fichier (requis si fichier protégé)",
+            "example": "secret123"
+          }
+        }
+      },
+      "LoginResponse_user": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant unique de l'utilisateur",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email de l'utilisateur",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Date de création du compte",
+            "format": "date-time",
+            "example": "2025-01-10T08:00:00Z"
+          }
+        }
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Non authentifié - Token JWT manquant, invalide ou expiré",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "examples": {
+              "missingToken": {
+                "summary": "Token manquant",
+                "value": {
+                  "error": "Unauthorized",
+                  "message": "Token d'authentification requis",
+                  "timestamp": "2025-01-15T10:45:00.000Z",
+                  "path": "/api/files"
+                }
+              },
+              "invalidToken": {
+                "summary": "Token invalide",
+                "value": {
+                  "error": "Unauthorized",
+                  "message": "Token invalide ou malformé",
+                  "timestamp": "2025-01-15T10:45:00.000Z",
+                  "path": "/api/files"
+                }
+              },
+              "expiredToken": {
+                "summary": "Token expiré",
+                "value": {
+                  "error": "Unauthorized",
+                  "message": "Token expiré (validité 24h)",
+                  "timestamp": "2025-01-15T10:45:00.000Z",
+                  "path": "/api/files"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "description": "Token JWT obtenu via l'endpoint `/api/auth/login`.\n\n**Format du header :**\nAuthorization: Bearer <token>\n\n**Durée de validité :** 24 heures\n\n**Contenu du token (payload) :**\n{\n  \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"email\": \"user@example.com\",\n  \"iat\": 1705334400,\n  \"exp\": 1705420800\n}\n",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

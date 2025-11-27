@@ -1,0 +1,38 @@
+# ==================================
+# Règles globales du projet
+# ==================================
+
+# Logs
+**/*.log
+nohup.out
+logs/
+
+# PID files
+.**.pid
+
+# Environment variables
+.env
+.env.secrets
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Original documents
+specs/
+
+# MkDocs
+.site
+.mkdocs.pid
+docs/openapi.yml
+
+# Patches
+patches*/**
+after-login.png
+before-login.png
+
+ignored/

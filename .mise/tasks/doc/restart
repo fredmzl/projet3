@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#MISE description="Restart MkDocs documentation server"
+
+set -e
+
+echo "Restarting MkDocs server..."
+
+# Try to stop (ignore errors if not running)
+mise run doc:stop 2>/dev/null || true
+
+# Wait a moment
+sleep 1
+
+# Start
+mise run doc:start

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#MISE description="Stop MkDocs documentation server"
+
+set -e
+
+PIDFILE=".mkdocs.pid"
+
+if [ ! -f "$PIDFILE" ]; then
+    echo "✗ MkDocs is not running (no PID file found)"
+    exit 1
+fi
+
+PID=$(cat "$PIDFILE")
+
+if ps -p "$PID" > /dev/null 2>&1; then
+    echo "Stopping MkDocs server (PID: $PID)..."
+    kill "$PID"
+    rm "$PIDFILE"
+    echo "✓ MkDocs stopped"
+else
+    echo "✗ Process not found (cleaning up PID file)"
+    rm "$PIDFILE"
+    exit 1
+fi
