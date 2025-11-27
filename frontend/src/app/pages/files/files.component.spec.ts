@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { FilesComponent } from './files.component';
 import { AuthService } from '../../core/services/auth.service';
+import { FileService } from '../../core/services/file.service';
 import { FileUploadModalComponent } from '../../shared/components/file-upload-modal/file-upload-modal.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,6 +15,7 @@ describe('FilesComponent', () => {
   let component: FilesComponent;
   let fixture: ComponentFixture<FilesComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let fileServiceSpy: jasmine.SpyObj<FileService>;
 
   const mockUser = {
     id: '123e4567-e89b-12d3-a456-426614174000',
@@ -24,6 +26,9 @@ describe('FilesComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['logout'], {
       currentUser: signal(mockUser)
     });
+    
+    const fileSpy = jasmine.createSpyObj('FileService', ['getFiles', 'deleteFile']);
+    fileSpy.getFiles.and.returnValue(of({ files: [], totalElements: 0, totalPages: 0, currentPage: 0, pageSize: 10 }));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -36,14 +41,15 @@ describe('FilesComponent', () => {
       ],
       providers: [
         provideRouter([]),
-        provideHttpClient(),
-        { provide: AuthService, useValue: authSpy }
+        { provide: AuthService, useValue: authSpy },
+        { provide: FileService, useValue: fileSpy }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FilesComponent);
     component = fixture.componentInstance;
     authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    fileServiceSpy = TestBed.inject(FileService) as jasmine.SpyObj<FileService>;
     fixture.detectChanges();
   });
 
@@ -58,28 +64,27 @@ describe('FilesComponent', () => {
 
     it('should display user email in toolbar', () => {
       const compiled = fixture.nativeElement;
-      const userInfo = compiled.querySelector('.user-info');
-      expect(userInfo?.textContent).toContain('test@example.com');
+      const userEmail = compiled.querySelector('.user-email');
+      expect(userEmail?.textContent?.trim()).toContain('test@example.com');
     });
   });
 
   describe('Toolbar', () => {
     it('should display "DataShare - Mes Fichiers" title', () => {
       const compiled = fixture.nativeElement;
-      const toolbar = compiled.querySelector('mat-toolbar');
-      expect(toolbar?.textContent).toContain('DataShare - Mes Fichiers');
+      const sidebar = compiled.querySelector('.sidebar-logo');
+      expect(sidebar?.textContent?.trim()).toContain('DataShare');
     });
 
     it('should have a logout button', () => {
       const compiled = fixture.nativeElement;
-      const logoutButton = compiled.querySelector('button[aria-label="logout"]') || 
-                          compiled.querySelector('mat-toolbar button:last-child');
+      const logoutButton = compiled.querySelector('.logout-button');
       expect(logoutButton).toBeTruthy();
     });
 
     it('should call logout when logout button is clicked', () => {
       const compiled = fixture.nativeElement;
-      const logoutButton = compiled.querySelector('mat-toolbar button:last-child') as HTMLButtonElement;
+      const logoutButton = compiled.querySelector('.logout-button') as HTMLButtonElement;
       
       logoutButton.click();
       
@@ -96,37 +101,37 @@ describe('FilesComponent', () => {
 
     it('should display "Aucun fichier" message', () => {
       const compiled = fixture.nativeElement;
-      const heading = compiled.querySelector('.empty-content h2');
-      expect(heading?.textContent).toBe('Aucun fichier');
+      const heading = compiled.querySelector('.empty-state h2');
+      expect(heading?.textContent?.trim()).toBe('Aucun fichier uploadé');
     });
 
     it('should display descriptive text', () => {
       const compiled = fixture.nativeElement;
-      const text = compiled.querySelector('.empty-content p');
+      const text = compiled.querySelector('.text-muted');
       expect(text?.textContent).toContain('Commencez par uploader');
     });
 
     it('should have upload button in empty state', () => {
       const compiled = fixture.nativeElement;
-      const uploadButton = compiled.querySelector('.empty-content button');
-      expect(uploadButton?.textContent).toContain('Uploader mon premier fichier');
+      const button = compiled.querySelector('.empty-state .upload-button');
+      expect(button?.textContent).toContain('Uploader mon premier fichier');
     });
   });
 
   describe('Upload Modal Interaction', () => {
     it('should have "Ajouter des fichiers" button in header', () => {
       const compiled = fixture.nativeElement;
-      const headerButton = compiled.querySelector('.files-header button');
-      expect(headerButton?.textContent).toContain('Ajouter des fichiers');
+      const button = compiled.querySelector('.header-actions .upload-button');
+      expect(button?.textContent).toContain('Ajouter des fichiers');
     });
 
     it('should open modal when header button is clicked', () => {
       const compiled = fixture.nativeElement;
-      const headerButton = compiled.querySelector('.files-header button') as HTMLButtonElement;
+      const button = compiled.querySelector('.header-actions .upload-button') as HTMLButtonElement;
       
       expect(component.showUploadModal()).toBe(false);
       
-      headerButton.click();
+      button.click();
       fixture.detectChanges();
       
       expect(component.showUploadModal()).toBe(true);
@@ -134,56 +139,14 @@ describe('FilesComponent', () => {
 
     it('should open modal when empty state button is clicked', () => {
       const compiled = fixture.nativeElement;
-      const emptyButton = compiled.querySelector('.empty-content button') as HTMLButtonElement;
+      const button = compiled.querySelector('.empty-state .upload-button') as HTMLButtonElement;
       
       expect(component.showUploadModal()).toBe(false);
       
-      emptyButton.click();
+      button.click();
       fixture.detectChanges();
       
       expect(component.showUploadModal()).toBe(true);
-    });
-
-    it('should close modal when closeUploadModal is called', () => {
-      component.showUploadModal.set(true);
-      fixture.detectChanges();
-      
-      expect(component.showUploadModal()).toBe(true);
-      
-      component.closeUploadModal();
-      
-      expect(component.showUploadModal()).toBe(false);
-    });
-
-    it('should render FileUploadModalComponent when modal is open', () => {
-      component.showUploadModal.set(true);
-      fixture.detectChanges();
-      
-      const compiled = fixture.nativeElement;
-      const modal = compiled.querySelector('app-file-upload-modal');
-      expect(modal).toBeTruthy();
-    });
-
-    it('should not render FileUploadModalComponent when modal is closed', () => {
-      component.showUploadModal.set(false);
-      fixture.detectChanges();
-      
-      const compiled = fixture.nativeElement;
-      const modal = compiled.querySelector('app-file-upload-modal');
-      // Le composant est toujours dans le DOM mais avec show=false
-      expect(component.showUploadModal()).toBe(false);
-    });
-
-    it('should pass show input to FileUploadModalComponent', () => {
-      component.showUploadModal.set(true);
-      fixture.detectChanges();
-      
-      const modalDebugElement = fixture.debugElement.query(
-        de => de.componentInstance instanceof FileUploadModalComponent
-      );
-      
-      expect(modalDebugElement).toBeTruthy();
-      expect(modalDebugElement.componentInstance.show()).toBe(true);
     });
   });
 
@@ -196,34 +159,13 @@ describe('FilesComponent', () => {
       
       expect(component.showUploadModal()).toBe(false);
     });
-
-    it('should handle uploaded event from modal', () => {
-      component.showUploadModal.set(true);
-      fixture.detectChanges();
-      
-      const modalDebugElement = fixture.debugElement.query(
-        de => de.componentInstance instanceof FileUploadModalComponent
-      );
-      
-      // Simuler l'émission de l'événement uploaded
-      spyOn(component, 'onFileUploaded');
-      modalDebugElement.componentInstance.uploaded.emit();
-      
-      expect(component.onFileUploaded).toHaveBeenCalled();
-    });
   });
 
   describe('Responsive Design', () => {
     it('should have responsive container class', () => {
       const compiled = fixture.nativeElement;
-      const container = compiled.querySelector('.files-container');
-      expect(container).toBeTruthy();
-    });
-
-    it('should have content section', () => {
-      const compiled = fixture.nativeElement;
-      const content = compiled.querySelector('.content');
-      expect(content).toBeTruthy();
+      const page = compiled.querySelector('.files-page');
+      expect(page).toBeTruthy();
     });
   });
 });

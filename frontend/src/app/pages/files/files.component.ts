@@ -8,12 +8,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { FileService } from '../../core/services/file.service';
 import { FileUploadModalComponent } from '../../shared/components/file-upload-modal/file-upload-modal.component';
 import { FileCardComponent } from '../../shared/components/file-card/file-card.component';
 import { CalloutComponent } from '../../shared/components/callout/callout.component';
 import { FileMetadata, FileFilter } from '../../core/models/file.model';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-files',
@@ -26,6 +28,7 @@ import { FileMetadata, FileFilter } from '../../core/models/file.model';
     MatButtonToggleModule,
     MatPaginatorModule,
     MatSnackBarModule,
+    MatDialogModule,
     FileUploadModalComponent,
     FileCardComponent,
     CalloutComponent
@@ -38,6 +41,7 @@ export class FilesComponent implements OnInit {
   private fileService = inject(FileService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   showUploadModal = signal<boolean>(false);
   files = signal<FileMetadata[]>([]);
@@ -147,13 +151,57 @@ export class FilesComponent implements OnInit {
   }
 
   /**
-   * Supprime un fichier (TODO: implémenter dans US06)
+   * Supprime un fichier après confirmation
    */
   onDeleteFile(file: FileMetadata): void {
-    // TODO: Implémenter la suppression dans US06
-    console.log('Supprimer le fichier:', file.id);
-    this.snackBar.open('Suppression non implémentée (US06)', 'Fermer', {
-      duration: 3000
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Supprimer le fichier ?',
+        message: `Êtes-vous sûr de vouloir supprimer "${file.filename}" ?\n\nCette action est irréversible.`,
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        confirmColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.fileService.deleteFile(file.id).subscribe({
+          next: () => {
+            // Retirer le fichier de la liste locale
+            const currentFiles = this.files();
+            this.files.set(currentFiles.filter(f => f.id !== file.id));
+            this.updateCounts();
+            this.applyFilter();
+            
+            this.snackBar.open('Fichier supprimé avec succès', 'Fermer', {
+              duration: 3000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom'
+            });
+          },
+          error: (error) => {
+            console.error('Erreur lors de la suppression:', error);
+            let errorMessage = 'Erreur lors de la suppression du fichier';
+            
+            if (error.status === 404) {
+              errorMessage = 'Fichier non trouvé';
+            } else if (error.status === 403) {
+              errorMessage = 'Vous n\'avez pas l\'autorisation de supprimer ce fichier';
+            } else if (error.status === 401) {
+              errorMessage = 'Vous devez vous reconnecter';
+              this.authService.logout();
+            }
+            
+            this.snackBar.open(errorMessage, 'Fermer', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom'
+            });
+          }
+        });
+      }
     });
   }
 

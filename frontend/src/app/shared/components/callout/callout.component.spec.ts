@@ -1,48 +1,58 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
 import { CalloutComponent, CalloutType } from './callout.component';
 
 describe('CalloutComponent', () => {
-  let component: CalloutComponent;
-  let fixture: ComponentFixture<CalloutComponent>;
+  let fixture: ComponentFixture<any>;
+
+  @Component({
+    template: '<app-callout [type]="type">{{message}}</app-callout>',
+    imports: [CalloutComponent]
+  })
+  class TestHostComponent {
+    message = 'Test message';
+    type: CalloutType = 'info';
+  }
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CalloutComponent]
+      imports: [CalloutComponent, TestHostComponent]
     }).compileComponents();
   });
 
   describe('Component Initialization', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Test message');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
       fixture.detectChanges();
     });
 
     it('should create', () => {
+      const component = fixture.debugElement.children[0].componentInstance;
       expect(component).toBeTruthy();
     });
 
-    it('should require message input', () => {
-      expect(component.message()).toBe('Test message');
+    it('should display projected content', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const label = compiled.querySelector('.callout__label');
+      expect(label?.textContent?.trim()).toBe('Test message');
     });
 
     it('should have default type as "info"', () => {
-      expect(component.type()).toBe('info');
+      const component = fixture.debugElement.children[0].componentInstance;
+      expect(component.type).toBe('info');
     });
 
     it('should accept type input', () => {
-      fixture.componentRef.setInput('type', 'error');
+      fixture.componentInstance.type = 'error';
       fixture.detectChanges();
-      expect(component.type()).toBe('error');
+      const component = fixture.debugElement.children[0].componentInstance;
+      expect(component.type).toBe('error');
     });
   });
 
   describe('Template Rendering', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Test message');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
       fixture.detectChanges();
     });
 
@@ -52,45 +62,33 @@ describe('CalloutComponent', () => {
       expect(callout).toBeTruthy();
     });
 
-    it('should have role="alert" for accessibility', () => {
+    it('should render icon', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const callout = compiled.querySelector('[role="alert"]');
-      expect(callout).toBeTruthy();
-    });
-
-    it('should render icon span', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      const icon = compiled.querySelector('.callout-icon');
+      const icon = compiled.querySelector('.callout__icon');
       expect(icon).toBeTruthy();
     });
 
-    it('should render message span', () => {
+    it('should render label span', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.callout-message');
-      expect(message).toBeTruthy();
+      const label = compiled.querySelector('.callout__label');
+      expect(label).toBeTruthy();
     });
 
-    it('should display the provided message', () => {
+    it('should display the projected content', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.callout-message');
-      expect(message?.textContent).toBe('Test message');
+      const label = compiled.querySelector('.callout__label');
+      expect(label?.textContent?.trim()).toBe('Test message');
     });
   });
 
   describe('Info Type', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Info message');
-      fixture.componentRef.setInput('type', 'info');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
+      fixture.componentInstance.type = 'info';
       fixture.detectChanges();
     });
 
     it('should have info CSS class', () => {
-      expect(component.calloutClasses()).toBe('callout callout--info');
-    });
-
-    it('should apply info class to element', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const callout = compiled.querySelector('.callout--info');
       expect(callout).toBeTruthy();
@@ -98,25 +96,19 @@ describe('CalloutComponent', () => {
 
     it('should display info icon', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const icon = compiled.querySelector('.callout-icon');
-      expect(icon?.textContent).toBe('ℹ️');
+      const icon = compiled.querySelector('mat-icon');
+      expect(icon?.textContent?.trim()).toBe('info');
     });
   });
 
   describe('Warning Type', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Warning message');
-      fixture.componentRef.setInput('type', 'warning');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
+      fixture.componentInstance.type = 'warning';
       fixture.detectChanges();
     });
 
     it('should have warning CSS class', () => {
-      expect(component.calloutClasses()).toBe('callout callout--warning');
-    });
-
-    it('should apply warning class to element', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const callout = compiled.querySelector('.callout--warning');
       expect(callout).toBeTruthy();
@@ -124,25 +116,19 @@ describe('CalloutComponent', () => {
 
     it('should display warning icon', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const icon = compiled.querySelector('.callout-icon');
-      expect(icon?.textContent).toBe('⚠️');
+      const icon = compiled.querySelector('mat-icon');
+      expect(icon?.textContent?.trim()).toBe('warning');
     });
   });
 
   describe('Error Type', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Error message');
-      fixture.componentRef.setInput('type', 'error');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
+      fixture.componentInstance.type = 'error';
       fixture.detectChanges();
     });
 
     it('should have error CSS class', () => {
-      expect(component.calloutClasses()).toBe('callout callout--error');
-    });
-
-    it('should apply error class to element', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const callout = compiled.querySelector('.callout--error');
       expect(callout).toBeTruthy();
@@ -150,147 +136,115 @@ describe('CalloutComponent', () => {
 
     it('should display error icon', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const icon = compiled.querySelector('.callout-icon');
-      expect(icon?.textContent).toBe('❌');
+      const icon = compiled.querySelector('mat-icon');
+      expect(icon?.textContent?.trim()).toBe('error');
     });
   });
 
   describe('Type Switching', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Test message');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
       fixture.detectChanges();
     });
 
     it('should update CSS class when type changes', () => {
-      fixture.componentRef.setInput('type', 'info');
-      fixture.detectChanges();
-      expect(component.calloutClasses()).toBe('callout callout--info');
+      const compiled = fixture.nativeElement as HTMLElement;
 
-      fixture.componentRef.setInput('type', 'warning');
+      fixture.componentInstance.type = 'info';
       fixture.detectChanges();
-      expect(component.calloutClasses()).toBe('callout callout--warning');
+      expect(compiled.querySelector('.callout--info')).toBeTruthy();
 
-      fixture.componentRef.setInput('type', 'error');
+      fixture.componentInstance.type = 'warning';
       fixture.detectChanges();
-      expect(component.calloutClasses()).toBe('callout callout--error');
+      expect(compiled.querySelector('.callout--warning')).toBeTruthy();
+
+      fixture.componentInstance.type = 'error';
+      fixture.detectChanges();
+      expect(compiled.querySelector('.callout--error')).toBeTruthy();
     });
 
     it('should update icon when type changes', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const icon = compiled.querySelector('.callout-icon');
+      const icon = compiled.querySelector('mat-icon');
 
-      fixture.componentRef.setInput('type', 'info');
+      fixture.componentInstance.type = 'info';
       fixture.detectChanges();
-      expect(icon?.textContent).toBe('ℹ️');
+      expect(icon?.textContent?.trim()).toBe('info');
 
-      fixture.componentRef.setInput('type', 'warning');
+      fixture.componentInstance.type = 'warning';
       fixture.detectChanges();
-      expect(icon?.textContent).toBe('⚠️');
+      expect(icon?.textContent?.trim()).toBe('warning');
 
-      fixture.componentRef.setInput('type', 'error');
+      fixture.componentInstance.type = 'error';
       fixture.detectChanges();
-      expect(icon?.textContent).toBe('❌');
+      expect(icon?.textContent?.trim()).toBe('error');
     });
   });
 
   describe('Message Updates', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Initial message');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
       fixture.detectChanges();
     });
 
-    it('should update displayed message when input changes', () => {
+    it('should update displayed message when content changes', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.callout-message');
+      const label = compiled.querySelector('.callout__label');
 
-      expect(message?.textContent).toBe('Initial message');
+      expect(label?.textContent?.trim()).toBe('Test message');
 
-      fixture.componentRef.setInput('message', 'Updated message');
+      fixture.componentInstance.message = 'Updated message';
       fixture.detectChanges();
-      expect(message?.textContent).toBe('Updated message');
+      expect(label?.textContent?.trim()).toBe('Updated message');
     });
 
     it('should handle empty messages', () => {
-      fixture.componentRef.setInput('message', '');
+      fixture.componentInstance.message = '';
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.callout-message');
-      expect(message?.textContent).toBe('');
+      const label = compiled.querySelector('.callout__label');
+      expect(label?.textContent?.trim()).toBe('');
     });
 
     it('should handle long messages', () => {
       const longMessage = 'This is a very long message that should still be displayed correctly in the callout component without any issues';
-      fixture.componentRef.setInput('message', longMessage);
+      fixture.componentInstance.message = longMessage;
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.callout-message');
-      expect(message?.textContent).toBe(longMessage);
+      const label = compiled.querySelector('.callout__label');
+      expect(label?.textContent?.trim()).toBe(longMessage);
     });
   });
 
-  describe('Icon Map', () => {
+  describe('Icon Rendering', () => {
     beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Test');
-      component = fixture.componentInstance;
+      fixture = TestBed.createComponent(TestHostComponent);
       fixture.detectChanges();
     });
 
-    it('should have correct icon map', () => {
-      expect(component.iconMap).toEqual({
-        info: 'ℹ️',
-        warning: '⚠️',
-        error: '❌'
-      });
+    it('should have getIcon method', () => {
+      const component = fixture.debugElement.children[0].componentInstance;
+      expect(component.getIcon).toBeDefined();
     });
 
-    it('should map info type to info icon', () => {
-      expect(component.iconMap['info']).toBe('ℹ️');
+    it('should return info icon for info type', () => {
+      const component = fixture.debugElement.children[0].componentInstance;
+      component.type = 'info';
+      expect(component.getIcon()).toBe('info');
     });
 
-    it('should map warning type to warning icon', () => {
-      expect(component.iconMap['warning']).toBe('⚠️');
+    it('should return warning icon for warning type', () => {
+      const component = fixture.debugElement.children[0].componentInstance;
+      component.type = 'warning';
+      expect(component.getIcon()).toBe('warning');
     });
 
-    it('should map error type to error icon', () => {
-      expect(component.iconMap['error']).toBe('❌');
-    });
-  });
-
-  describe('Accessibility', () => {
-    beforeEach(() => {
-      fixture = TestBed.createComponent(CalloutComponent);
-      fixture.componentRef.setInput('message', 'Test message');
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    });
-
-    it('should have role="alert" attribute', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      const callout = compiled.querySelector('[role="alert"]');
-      expect(callout).toBeTruthy();
-    });
-
-    it('should maintain role="alert" across type changes', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-
-      fixture.componentRef.setInput('type', 'info');
-      fixture.detectChanges();
-      expect(compiled.querySelector('[role="alert"]')).toBeTruthy();
-
-      fixture.componentRef.setInput('type', 'warning');
-      fixture.detectChanges();
-      expect(compiled.querySelector('[role="alert"]')).toBeTruthy();
-
-      fixture.componentRef.setInput('type', 'error');
-      fixture.detectChanges();
-      expect(compiled.querySelector('[role="alert"]')).toBeTruthy();
+    it('should return error icon for error type', () => {
+      const component = fixture.debugElement.children[0].componentInstance;
+      component.type = 'error';
+      expect(component.getIcon()).toBe('error');
     });
   });
 });

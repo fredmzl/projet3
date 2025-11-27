@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Reset application and all data (database + storage)"
+#MISE arg "--restart" help="restart app after reset" default="false"
 
 set -e
 
@@ -19,6 +20,12 @@ if [ "$confirmation" != "yes" ]; then
     exit 0
 fi
 
+# Check if --storage flag is provided
+RESTART=false
+if [[ "$1" == "--restart" ]] || [[ "$2" == "--restart" ]]; then
+    RESTART=true
+fi
+
 echo ""
 echo "=========================================="
 echo "🔄 Resetting Application"
@@ -34,12 +41,26 @@ echo ""
 echo "🗑️  Flushing database and storage..."
 mise run database:flush --storage
 echo ""
+# Restart application if requested
+if [ "$RESTART" = true ]; then
+    echo "🔄 Restarting application..."
+    mise run app:start
+    echo ""
+else
+    echo "=========================================="
+    echo "✅ Application reset completed!"
+    echo "=========================================="
+    echo ""
+    echo "📋 Next steps:"
+    echo "   mise run app:start              - Start application"
+    echo "   mise run database:bootstrap     - Create test data"
+    echo ""
+fi
 
-echo "=========================================="
-echo "✅ Application reset completed!"
-echo "=========================================="
-echo ""
-echo "📋 Next steps:"
-echo "   mise run app:start              - Start application"
-echo "   mise run database:bootstrap     - Create test data"
-echo ""
+
+
+
+
+
+
+

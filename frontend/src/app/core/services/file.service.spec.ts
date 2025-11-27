@@ -7,7 +7,7 @@ import { HttpEventType } from '@angular/common/http';
 describe('FileService', () => {
   let service: FileService;
   let httpMock: HttpTestingController;
-  const apiUrl = `${environment.apiUrl}/api/files`;
+  const apiUrl = `${environment.apiUrl}/files`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,17 +34,14 @@ describe('FileService', () => {
     };
 
     const mockSuccessResponse: FileUploadResponse = {
-      message: 'Fichier uploadé avec succès',
-      file: {
-        id: '550e8400-e29b-41d4-a716-446655440000',
-        originalFilename: 'test.pdf',
-        fileSize: 1024,
-        mimeType: 'application/pdf',
-        downloadLink: 'http://192.168.10.163:8080/api/download/abc123-token',
-        expirationDate: '2025-01-22T10:00:00Z',
-        hasPassword: false,
-        createdAt: '2025-01-15T10:00:00Z'
-      }
+      id: '550e8400-e29b-41d4-a716-446655440000',
+      filename: 'test.pdf',
+      fileSize: 1024,
+      downloadToken: 'abc123-token',
+      downloadUrl: 'http://192.168.10.163:8080/api/files/download/abc123-token',
+      expirationDate: '2025-01-22T10:00:00Z',
+      hasPassword: false,
+      createdAt: '2025-01-15T10:00:00Z'
     };
 
     it('should send POST request to correct endpoint', () => {
@@ -214,7 +211,7 @@ describe('FileService', () => {
         complete: () => {
           expect(completedReceived).toBe(true);
           expect(receivedResponse).toEqual(mockSuccessResponse);
-          expect(receivedResponse?.file.downloadLink).toBe('http://192.168.10.163:8080/api/download/abc123-token');
+          expect(receivedResponse?.downloadUrl).toBe('http://192.168.10.163:8080/api/files/download/abc123-token');
           done();
         }
       });
@@ -377,16 +374,13 @@ describe('FileService', () => {
 
       const protectedResponse: FileUploadResponse = {
         ...mockSuccessResponse,
-        file: {
-          ...mockSuccessResponse.file,
-          hasPassword: true
-        }
+        hasPassword: true
       };
 
       service.uploadFile(request).subscribe({
         next: (progress: UploadProgress) => {
           if (progress.status === 'completed' && progress.response) {
-            expect(progress.response.file.hasPassword).toBe(true);
+            expect(progress.response.hasPassword).toBe(true);
             done();
           }
         }
@@ -401,14 +395,115 @@ describe('FileService', () => {
   });
 
   describe('getUserFiles()', () => {
-    it('should throw "Not implemented" error', () => {
-      expect(() => service.getUserFiles()).toThrowError('Not implemented - US05');
+    it('should be removed - replaced by getFiles', () => {
+      expect(service.getFiles).toBeDefined();
     });
   });
 
   describe('deleteFile()', () => {
-    it('should throw "Not implemented" error', () => {
-      expect(() => service.deleteFile('123')).toThrowError('Not implemented - US06');
+    const fileId = '550e8400-e29b-41d4-a716-446655440000';
+
+    it('should send DELETE request to correct endpoint', () => {
+      service.deleteFile(fileId).subscribe();
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+
+    it('should return void observable on success', (done) => {
+      service.deleteFile(fileId).subscribe({
+        next: (result) => {
+          expect(result).toBeNull();
+          done();
+        }
+      });
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+
+    it('should handle 404 Not Found error', (done) => {
+      const errorResponse = {
+        error: 'Not Found',
+        message: 'Fichier non trouvé',
+        timestamp: '2025-01-15T10:00:00Z'
+      };
+
+      service.deleteFile(fileId).subscribe({
+        error: (error) => {
+          expect(error.status).toBe(404);
+          expect(error.error.message).toBe('Fichier non trouvé');
+          done();
+        }
+      });
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      req.flush(errorResponse, { status: 404, statusText: 'Not Found' });
+    });
+
+    it('should handle 403 Forbidden error', (done) => {
+      const errorResponse = {
+        error: 'Forbidden',
+        message: 'Vous n\'êtes pas autorisé à supprimer ce fichier',
+        timestamp: '2025-01-15T10:00:00Z'
+      };
+
+      service.deleteFile(fileId).subscribe({
+        error: (error) => {
+          expect(error.status).toBe(403);
+          expect(error.error.message).toContain('autorisé');
+          done();
+        }
+      });
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      req.flush(errorResponse, { status: 403, statusText: 'Forbidden' });
+    });
+
+    it('should handle 401 Unauthorized error', (done) => {
+      const errorResponse = {
+        error: 'Unauthorized',
+        message: 'Token d\'authentification requis',
+        timestamp: '2025-01-15T10:00:00Z'
+      };
+
+      service.deleteFile(fileId).subscribe({
+        error: (error) => {
+          expect(error.status).toBe(401);
+          expect(error.error.message).toContain('authentification');
+          done();
+        }
+      });
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      req.flush(errorResponse, { status: 401, statusText: 'Unauthorized' });
+    });
+
+    it('should include JWT token in Authorization header', () => {
+      service.deleteFile(fileId).subscribe();
+
+      const req = httpMock.expectOne(`${apiUrl}/${fileId}`);
+      // Le JWT est ajouté par l'intercepteur, on vérifie juste que la requête est faite
+      expect(req.request.headers.has('Authorization')).toBe(false); // Pas encore ajouté par l'intercepteur dans le test
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+
+    it('should handle multiple delete requests', () => {
+      const fileId1 = '550e8400-e29b-41d4-a716-446655440001';
+      const fileId2 = '550e8400-e29b-41d4-a716-446655440002';
+
+      service.deleteFile(fileId1).subscribe();
+      service.deleteFile(fileId2).subscribe();
+
+      const req1 = httpMock.expectOne(`${apiUrl}/${fileId1}`);
+      const req2 = httpMock.expectOne(`${apiUrl}/${fileId2}`);
+
+      expect(req1.request.method).toBe('DELETE');
+      expect(req2.request.method).toBe('DELETE');
+
+      req1.flush(null, { status: 204, statusText: 'No Content' });
+      req2.flush(null, { status: 204, statusText: 'No Content' });
     });
   });
 });

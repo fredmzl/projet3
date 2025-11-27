@@ -112,10 +112,10 @@ export class FileService {
 
   /**
    * Supprime un fichier
-   * TODO: Implémenter dans US06
+   * @param fileId UUID du fichier à supprimer
+   * @returns Observable vide (204 No Content)
    */
   deleteFile(fileId: string): Observable<void> {
-    // return this.http.delete<void>(`${this.apiUrl}/${fileId}`);
-    throw new Error('Not implemented - US06');
+    return this.http.delete<void>(`${this.apiUrl}/${fileId}`);
   }
 }

@@ -2,6 +2,22 @@
 #MISE description="Seed database and run E2E tests"
 set -e
 
+PIDFILE="${MISE_CONFIG_ROOT}/.backend.pid"
+
+# Vérifier si le backend est déjà lancé
+if [ -f "$PIDFILE" ]; then
+    PID=$(cat "$PIDFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "✅ Backend is running (PID: $PID)"
+    fi
+else
+    echo "Startinfg backend for E2E tests..."
+    mise backend:start
+    # Attendre un peu pour s'assurer que le backend est bien lancé
+    sleep 5
+fi
+
+
 echo "🚀 Préparation et exécution des tests E2E..."
 echo "================================================================"
 echo ""

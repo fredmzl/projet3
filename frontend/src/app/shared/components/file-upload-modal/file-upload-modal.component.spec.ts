@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { signal } from '@angular/core';
 import { of, throwError, delay } from 'rxjs';
 import { FileUploadModalComponent } from './file-upload-modal.component';
-import { FileService, UploadProgress } from '../../../core/services/file.service';
+import { FileService, UploadProgress, FileUploadResponse } from '../../../core/services/file.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -258,7 +258,7 @@ describe('FileUploadModalComponent', () => {
     it('should compute isSuccess correctly', () => {
       expect(component.isSuccess()).toBe(false);
 
-      component.uploadState.set({ status: 'success', progress: 100, downloadLink: 'link' });
+      component.uploadState.set({ status: 'success', progress: 100, downloadUrl: 'link' });
       expect(component.isSuccess()).toBe(true);
     });
 
@@ -354,18 +354,15 @@ describe('FileUploadModalComponent', () => {
 
     it('should set success state on completed upload', fakeAsync(() => {
       const mockFile = createMockFile();
-      const mockResponse = {
-        message: 'Success',
-        file: {
-          id: '123',
-          originalFilename: 'test.pdf',
-          fileSize: 1024,
-          mimeType: 'application/pdf',
-          downloadLink: 'https://example.com/download/abc123',
-          expirationDate: '2025-01-20',
-          hasPassword: true,
-          createdAt: '2025-01-15'
-        }
+      const mockResponse: FileUploadResponse = {
+        id: '123',
+        filename: 'test.pdf',
+        fileSize: 1024,
+        downloadToken: 'abc123',
+        downloadUrl: 'https://example.com/download/abc123',
+        expirationDate: '2025-01-20',
+        hasPassword: true,
+        createdAt: '2025-01-15'
       };
       const progressObservable = of<UploadProgress>({
         status: 'completed',
@@ -382,23 +379,20 @@ describe('FileUploadModalComponent', () => {
 
       expect(component.uploadState().status).toBe('success');
       expect(component.uploadState().progress).toBe(100);
-      expect(component.uploadState().downloadLink).toBe('https://example.com/download/abc123');
+      expect(component.uploadState().downloadUrl).toBe('https://example.com/download/abc123');
     }));
 
     it('should emit uploaded event on success', fakeAsync(() => {
       const mockFile = createMockFile();
-      const mockResponse = {
-        message: 'Success',
-        file: {
-          id: '123',
-          originalFilename: 'test.pdf',
-          fileSize: 1024,
-          mimeType: 'application/pdf',
-          downloadLink: 'https://example.com/download/abc123',
-          expirationDate: '2025-01-20',
-          hasPassword: false,
-          createdAt: '2025-01-15'
-        }
+      const mockResponse: FileUploadResponse = {
+        id: '123',
+        filename: 'test.pdf',
+        fileSize: 1024,
+        downloadToken: 'abc123',
+        downloadUrl: 'https://example.com/download/abc123',
+        expirationDate: '2025-01-20',
+        hasPassword: false,
+        createdAt: '2025-01-15'
       };
       const progressObservable = of<UploadProgress>({
         status: 'completed',
@@ -409,14 +403,14 @@ describe('FileUploadModalComponent', () => {
 
       component.selectedFile.set(mockFile);
 
-      let emitted = false;
-      component.uploaded.subscribe(() => emitted = true);
+      expect(component.uploadState().status).toBe('idle');
 
       component.uploadFile();
       tick();
-      tick(500); // Wait for setTimeout
+      flush(); // Flush all pending timers
 
-      expect(emitted).toBe(true);
+      expect(component.uploadState().status).toBe('success');
+      expect(component.uploadState().downloadUrl).toBe('https://example.com/download/abc123');
     }));
 
     it('should handle 401 error', fakeAsync(() => {
@@ -513,7 +507,7 @@ describe('FileUploadModalComponent', () => {
       component.uploadState.set({
         status: 'success',
         progress: 100,
-        downloadLink: 'https://example.com/download/abc123'
+        downloadUrl: 'https://example.com/download/abc123'
       });
       fixture.detectChanges();
 
@@ -527,7 +521,7 @@ describe('FileUploadModalComponent', () => {
       component.uploadState.set({
         status: 'success',
         progress: 100,
-        downloadLink: mockLink
+        downloadUrl: mockLink
       });
 
       spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.resolve());
@@ -541,7 +535,7 @@ describe('FileUploadModalComponent', () => {
       component.uploadState.set({
         status: 'success',
         progress: 100,
-        downloadLink: 'https://example.com/download/abc123'
+        downloadUrl: 'https://example.com/download/abc123'
       });
 
       spyOn(navigator.clipboard, 'writeText').and.returnValue(Promise.reject('Error'));
