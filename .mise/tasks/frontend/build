@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Build l'application frontend"
+#MISE description="Build l'application frontend pour la production"
 set -e
 
 echo "🏗️  Build de l'application frontend..."
@@ -7,13 +7,7 @@ echo "================================================================"
 
 cd frontend
 
-# installer les dépendances si nécessaire
-if [ ! -d "node_modules" ]; then
-    echo "📦 Installation des dépendances..."
-    npm install
-fi
-
-# Build
+# Build de production
 npm run build
 
 echo ""
@@ -21,3 +15,4 @@ echo "================================================================"
 echo "✅ Build terminé avec succès!"
 echo ""
 echo "📂 Emplacement: frontend/dist/"
+echo "📊 Fichiers optimisés pour la production"

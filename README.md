@@ -28,6 +28,15 @@ mise run doc:start
 
 Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de développement.
 
+### Application complète
+
+| Commande | Description |
+|----------|-------------|
+| `mise run app:start` | Démarre l'application complète (backend + frontend) |
+| `mise run app:stop` | Arrête l'application complète |
+| `mise run app:check` | Vérifie l'état de santé de l'application en cours d'exécution |
+| `mise run app:reset` | Réinitialise l'application et toutes les données (database + storage) |
+
 ### Documentation
 
 | Commande | Description |
@@ -44,8 +53,8 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise run backend:start` | Démarre l'application Spring Boot (port 3000) |
 | `mise run backend:stop` | Arrête l'application Spring Boot |
 | `mise run backend:restart` | Redémarre l'application Spring Boot |
-| `mise run backend:test` | Lance les tests unitaires et d'intégration |
-| `mise run backend:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
+| `mise run backend:tests:all` | Lance les tests unitaires et d'intégration |
+| `mise run backend:tests:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
 | `mise run backend:log` | Affiche les logs du backend en temps réel |
 
 ### Frontend

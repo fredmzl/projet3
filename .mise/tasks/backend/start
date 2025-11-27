@@ -13,6 +13,11 @@ if [ -f "$PIDFILE" ]; then
     fi
 fi
 
+if [ -f "${MISE_CONFIG_ROOT}/backend/.env.cors" ]; then
+    echo "📥 Loading CORS configuration from .env.cors"
+    source "${MISE_CONFIG_ROOT}/backend/.env.cors"
+fi
+
 # Vérifier le port
 if lsof -ti :3000 > /dev/null; then
     echo "❌ Port 3000 already in use"

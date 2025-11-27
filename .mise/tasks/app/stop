@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#MISE description="Stop complete application (backend + frontend)"
+
+set -e
+
+echo "=========================================="
+echo "🛑 Stopping DataShare Application"
+echo "=========================================="
+echo ""
+
+# Stop frontend
+echo "🎨 Stopping frontend..."
+mise run frontend:stop 2>/dev/null || echo "   Frontend was not running"
+echo ""
+
+# Stop backend
+echo "📦 Stopping backend..."
+mise run backend:stop 2>/dev/null || echo "   Backend was not running"
+echo ""
+
+echo "=========================================="
+echo "✅ Application stopped successfully!"
+echo "=========================================="
