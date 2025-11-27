@@ -267,15 +267,13 @@ Cache-Control: no-cache, no-store, must-revalidate
 ## 🧪 Critères d'Acceptation
 
 !!! tip "Tests à valider"
+    - [ ] Lorsqu'un utilisateur accède à un lien valide via son navigateur, les informations du fichier sont affichées correctement.
     - [ ] Un fichier public peut être téléchargé sans mot de passe
     - [ ] Un fichier protégé affiche le formulaire de mot de passe
     - [ ] Le mot de passe correct permet le téléchargement
     - [ ] Un mot de passe incorrect affiche une erreur claire
-    - [ ] Après 3 tentatives échouées, l'accès est bloqué 15 minutes
     - [ ] Un fichier expiré retourne une erreur 410 Gone
     - [ ] Un token invalide retourne une erreur 404 Not Found
     - [ ] Les headers HTTP sont corrects (Content-Type, Content-Disposition)
     - [ ] Le nom du fichier téléchargé correspond à l'original
-    - [ ] Les statistiques de téléchargement sont mises à jour
     - [ ] La page est accessible sans authentification
-    - [ ] Le rate limiting fonctionne (10 téléchargements/min/IP)

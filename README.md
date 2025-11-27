@@ -1,26 +1,126 @@
-# oc-projet3
+# oc-projet3 - DataShare
 
-## Getting started
+Application de partage de fichiers sécurisé avec expiration automatique et protection par mot de passe.
 
-install mise :
+## 🚀 Quick Start
+
+### 1. Prérequis
+
+- Java 21
+- Node.js 20+
+- Docker et Docker Compose
+- [Mise](https://mise.jdx.dev/) (gestionnaire de tâches)
+
+### 2. Installation de Mise
 
 ```bash
 curl https://mise.run | sh
-echo "eval \"\$(/home/fred/.local/bin/mise activate bash)\"" >> ~/.bashrc
+echo "eval \"\$(~/.local/bin/mise activate bash)\"" >> ~/.bashrc
 source ~/.bashrc
-mise doctor # to verify installation
+mise doctor # Vérifier l'installation
 mise use -g usage # to enable auto-completion and help
 ```
 
-Then, in the project root, run:
+### 3. Démarrer et tester l'application
+
+```bash
+# Cloner le projet
+git clone <repository-url>
+cd oc-projet3
+
+# Installer les dépendances
+mise install
+
+# bootstraper le projet 
+mise prepare
+
+# Déployer la documentation (localhost:8000)
+mise doc:start
+
+# Démarrer l'application complète (backend + frontend)
+mise app:start && sleep 5
+
+# vérifier l'état de l'application
+mise app:health
+
+# vérifier les data
+mise app:showdata
+
+# Créer des données de démo
+mise app:bootstrap
+
+# vérifier les data
+mise app:showdata
 ```
 
-bootstrap documentation site
+L'application sera accessible sur :  
+- 🌐 Frontend : http://localhost:4200  
+- 🔌 Backend API : http://localhost:3000  
+- 📚 Documentation : http://localhost:8000 (avec `mise run doc:start`)  
+
+### 4. Comptes de démonstration
+
+Après avoir exécuté `mise run app:bootstrap`, vous disposez de 2 utilisateurs de test :
+
+| Email | Mot de passe | Fichiers |
+|-------|--------------|----------|
+| `alice@example.com` | `password` | 4 fichiers (1 public, 1 protégé, 2 expirés) |
+| `bob@example.com` | `password` | 3 fichiers (2 publics, 1 protégé) |
+
+**Fichiers protégés par mot de passe :**  
+- Alice : `secret-notes.md` → mot de passe : `password`  
+- Bob : `private-data.txt` → mot de passe : `password`  
+
+### 5. Tester l'application
+
+#### directement via le backend avec curl
+
 ```bash
-mise install
-mise run prepare
-mise run doc:start
+# Se connecter en tant qu'Alice
+ALICE_TOKEN=$(curl -s -X POST "http://localhost:3000/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"login":"alice@example.com","password":"password"}' | jq -r '.token')
+
+# Lister les fichiers d'Alice
+curl -s -X GET "http://localhost:3000/api/files" \
+  -H "Authorization: Bearer $ALICE_TOKEN" | jq '.content[] | {filename, hasPassword, expirationDate}'
+
+# Télécharger un fichier public (remplacer {token} par un vrai token)
+curl -X POST "http://localhost:3000/api/download/{token}" \
+  -H "Content-Type: application/json" \
+  -d '{}' -o fichier-telecharge.txt
+
+# Télécharger un fichier protégé
+curl -X POST "http://localhost:3000/api/download/{token}" \
+  -H "Content-Type: application/json" \
+  -d '{"password":"password"}' -o fichier-protege.txt
 ```
+
+#### via l'interface web
+
+**se connecter et voir l'historique des fichiers**  
+1. Ouvrez votre navigateur et allez à l'adresse [http://localhost:4200](http://localhost:4200)  
+2. Connectez-vous avec les identifiants d'Alice ou Bob.  
+3. Explorez les fonctionnalités de l'application : téléversement, téléchargement, gestion des fichiers, etc.  
+
+**Tester le téléchargement d'un fichier non protégé**  
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb](http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb)  
+2. cliquer sur le bouton de téléchargement  
+3. Le téléchargement du fichier devrait commencer automatiquement  
+
+**Tester le téléchargement d'un fichier protégé**  
+1. Depuis l'interface web, essayez de télécharger un fichier protégé (ex: `secret-notes.md` pour Alice), à l'adresse suivante [http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b](http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b)  
+2. Une fenêtre modale apparaîtra vous demandant le mot de passe.  
+3. Entrez le mot de passe correct (`password`) et validez.  
+4. Le téléchargement du fichier devrait commencer automatiquement si le mot de passe est correct.    
+
+**Tester le téléchargement d'un fichier expiré**  
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb)  
+2. Une alerte apparaîtra indiquant que le lien a expiré.  
+
+**Tester le téléchargement avec un token invalide**  
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb)  
+2. Une alerte apparaîtra indiquant que le fichier n'existe pas.  
 
 ---
 
@@ -31,73 +131,75 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 ### Application complète
 
 | Commande | Description |
-|----------|-------------|
-| `mise run app:start` | Démarre l'application complète (backend + frontend) |
-| `mise run app:stop` | Arrête l'application complète |
-| `mise run app:check` | Vérifie l'état de santé de l'application en cours d'exécution |
-| `mise run app:reset` | Réinitialise l'application et toutes les données (database + storage) |
+|----------|-------------|  
+| `mise app:start` | Démarre l'application complète (backend + frontend) |
+| `mise app:restart` | Redémarre l'application complète |
+| `mise app:bootstrap` | Crée des données de démonstration (utilisateurs + fichiers) |
+| `mise app:stop` | Arrête l'application complète |
+| `mise app:health` | Vérifie l'état de santé de l'application en cours d'exécution |
+| `mise app:reset` | Arrête l'application et efface toutes les données (database + storage) |
+| `mise app:reset --restart` | Efface toutes les données (database + storage) et redémarre l'application |
+| `mise app:showdata` | Affiche le contenu de la base de données et du storage |
 
 ### Documentation
 
 | Commande | Description |
 |----------|-------------|
-| `mise run doc:start` | Démarre le serveur de documentation MkDocs (port 8000) |
-| `mise run doc:stop` | Arrête le serveur de documentation |
-| `mise run doc:restart` | Redémarre le serveur de documentation |
+| `mise doc:start` | Démarre le serveur de documentation MkDocs (port 8000) |
+| `mise doc:stop` | Arrête le serveur de documentation |
+| `mise doc:restart` | Redémarre le serveur de documentation |
 
 ### Backend
 
 | Commande | Description |
 |----------|-------------|
-| `mise run backend:build` | Compile le projet backend avec Maven |
-| `mise run backend:start` | Démarre l'application Spring Boot (port 3000) |
-| `mise run backend:stop` | Arrête l'application Spring Boot |
-| `mise run backend:restart` | Redémarre l'application Spring Boot |
-| `mise run backend:tests:all` | Lance les tests unitaires et d'intégration |
-| `mise run backend:tests:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
-| `mise run backend:log` | Affiche les logs du backend en temps réel |
+| `mise backend:build` | Compile le projet backend avec Maven |
+| `mise backend:start` | Démarre l'application Spring Boot (port 3000) |
+| `mise backend:stop` | Arrête l'application Spring Boot |
+| `mise backend:restart` | Redémarre l'application Spring Boot |
+| `mise backend:tests:all` | Lance les tests unitaires et d'intégration |
+| `mise backend:tests:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
+| `mise backend:log` | Affiche les logs du backend en temps réel |
 
 ### Frontend
 
 | Commande | Description |
 |----------|-------------|
-| `mise run frontend:build` | Build l'application frontend pour la production |
-| `mise run frontend:start` | Démarre le serveur de développement Angular (port 4200) |
-| `mise run frontend:stop` | Arrête le serveur de développement |
-| `mise run frontend:restart` | Redémarre le serveur de développement |
-| `mise run frontend:log` | Affiche les logs du frontend en temps réel |
-| `mise run frontend:tests:all` | Exécute tous les tests frontend (single run) |
-| `mise run frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
-| `mise run frontend:tests:e2e` | Exécute les tests e2e |
+| `mise frontend:build` | Build l'application frontend pour la production |
+| `mise frontend:start` | Démarre le serveur de développement Angular (port 4200) |
+| `mise frontend:stop` | Arrête le serveur de développement |
+| `mise frontend:restart` | Redémarre le serveur de développement |
+| `mise frontend:log` | Affiche les logs du frontend en temps réel |
+| `mise frontend:tests:all` | Exécute tous les tests frontend (single run) |
+| `mise frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
+| `mise frontend:tests:e2e` | Exécute les tests e2e |
 
 ### Base de données
 
 | Commande | Description |
 |----------|-------------|
-| `mise run database:show` | Affiche le contenu des tables de la base de données |
-| `mise run database:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
-| `mise run database:flush --storage` | Supprime la base de données ET tous les fichiers du storage |
-| `mise run database:bootstrap` | Crée des utilisateurs et fichiers de test (testuser, listuser, alice) |
-| `mise run database:seed` | Crée un utilisateur testuser@example.net/password |
+| `mise db:show` | Affiche le contenu des tables de la base de données |
+| `mise db:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
+| `mise db:flush --storage` | Supprime la base de données ET tous les fichiers du storage |
 
 ### Storage
 
 | Commande | Description |
 |----------|-------------|
-| `mise run storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
-| `mise run storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
+| `mise storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
+| `mise storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
 
 ### Données (Database + Storage)
 
 | Commande | Description |
 |----------|-------------|
-| `mise run showdata` | Affiche le contenu de la base de données et du storage |
+| `mise showdata` | Affiche le contenu de la base de données et du storage |
 
 ### Configuration
 
 | Commande | Description |
 |----------|-------------|
-| `mise run prepare` | Installe les dépendances Python pour la documentation |
+| `mise prepare` | Installe les dépendances Python pour la documentation |
 
 ### Utilisation
 
@@ -106,10 +208,10 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 mise tasks
 
 # Exécuter une tâche
-mise run <nom-de-la-tache>
+mise <nom-de-la-tache>
 
 # Exemple : démarrer le backend
-mise run backend:start
+mise backend:start
 ```
 
 ---

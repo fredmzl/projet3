@@ -1,0 +1,89 @@
+<div class="download-container">
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Chargement des informations du fichier...</p>
+  </div>
+
+  <!-- Affichage des informations du fichier -->
+  <div *ngIf="!loading && fileInfo && !fileInfo.isExpired" class="download-card">
+    <!-- Icône du fichier -->
+    <div class="file-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+        <polyline points="13 2 13 9 20 9"></polyline>
+      </svg>
+    </div>
+
+    <!-- Informations du fichier -->
+    <div class="file-info">
+      <h2 class="file-name">{{ fileInfo.originalFilename }}</h2>
+      <p class="file-size">{{ formattedSize }}</p>
+      <p class="expiration-warning" [class.urgent]="daysUntilExpiration <= 1">
+        ⏱️ {{ expirationMessage }}
+      </p>
+    </div>
+
+    <!-- Formulaire de mot de passe (si nécessaire) -->
+    <form [formGroup]="downloadForm" *ngIf="fileInfo.hasPassword" class="password-form">
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password"
+          placeholder="Entrez le mot de passe"
+          [class.error]="showPasswordError"
+        />
+        <span class="error-message" *ngIf="showPasswordError">
+          Le mot de passe est requis
+        </span>
+      </div>
+    </form>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="error-alert">
+      {{ error }}
+    </div>
+
+    <!-- Bouton de téléchargement -->
+    <button 
+      type="button"
+      class="download-button" 
+      (click)="onDownload()"
+      [disabled]="downloading || (fileInfo.hasPassword && downloadForm.invalid)"
+    >
+      <span *ngIf="!downloading">Télécharger</span>
+      <span *ngIf="downloading" class="downloading">
+        <span class="spinner-small"></span>
+        Téléchargement en cours...
+      </span>
+    </button>
+  </div>
+
+  <!-- Fichier expiré -->
+  <div *ngIf="!loading && fileInfo && fileInfo.isExpired" class="error-card">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </div>
+    <h2>Fichier expiré</h2>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Erreur générale (404, erreur réseau, etc.) -->
+  <div *ngIf="!loading && !fileInfo && error" class="error-card">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="15" y1="9" x2="9" y2="15"></line>
+        <line x1="9" y1="9" x2="15" y2="15"></line>
+      </svg>
+    </div>
+    <h2>Fichier non disponible</h2>
+    <p>{{ error }}</p>
+  </div>
+</div>

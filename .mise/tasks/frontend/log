@@ -15,4 +15,4 @@ if [ ! -f "$PIDFILE" ]; then
 fi
 
 cd "${MISE_CONFIG_ROOT}/frontend" || exit 1
-tail -f frontend.log
+tail -f frontend.log -n 50

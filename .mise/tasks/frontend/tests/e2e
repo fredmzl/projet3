@@ -24,7 +24,7 @@ echo ""
 
 # 1. Seed de la base de données
 echo "📦 Étape 1/2: Seed de la base de données"
-mise run database:seed
+mise run db:seed
 
 echo ""
 echo "================================================================"

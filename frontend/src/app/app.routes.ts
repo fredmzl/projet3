@@ -3,6 +3,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
 import { FilesComponent } from './pages/files/files.component';
+import { DownloadComponent } from './pages/download/download.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
@@ -17,6 +18,10 @@ export const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent
+    },
+    {
+        path: 'download/:token',
+        component: DownloadComponent
     },
     {
         path: 'files',

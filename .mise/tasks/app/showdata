@@ -3,5 +3,5 @@
 
 set -e
 
-mise database:show
+mise db:show
 mise storage:show
