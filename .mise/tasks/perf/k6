@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#MISE description="Run K6 Load Tests against DataShare backend"
+#mise arg "--bootstrap" help="Bootstrap demo data before tests" default="false"
+set -e
+
+echo "🚀 Bootstrapping DataShare with demo data..."
+echo "================================================================"
+echo ""
+
+# Check if --bootstrap flag is provided
+BOOTSTRAP=false
+if [[ "$1" == "--bootstrap" ]] || [[ "$2" == "--bootstrap" ]]; then
+    BOOTSTRAP=true
+fi
+
+if [ "$BOOTSTRAP" = true ]; then
+    echo "⚠️  This will delete ALL database data AND all storage files!"
+    read -p "Are you sure? (yes/no): " confirmation
+
+    if [ "$confirmation" != "yes" ]; then
+        echo "❌ Operation cancelled"
+        exit 0
+    fi
+
+    # Exécuter le script de seed
+    "${MISE_CONFIG_ROOT}/.mise/scripts/docker-app-bootstrap.sh"
+    echo -e "${GREEN}✅ DataShare bootstrapped with demo data${NC}"
+fi
+
+
+# ========================================
+
+echo "=== Préparation Tests K6 - DataShare ==="
+# Exécuter le script de setup K6
+"${MISE_CONFIG_ROOT}/.mise/scripts/setup-k6-test.sh"
+
+
+echo "🚀 launching k6 load tests against DataShare backend..."
+echo "================================================================"
+echo ""
+# Charger et exporter les variables d'environnement
+set -a
+echo "===============Load env. variables =================="
+source "${MISE_CONFIG_ROOT}/k6/.env"
+set +a
+
+# Exécuter K6 avec les variables
+k6 run "${MISE_CONFIG_ROOT}/k6/scripts/download-load-test.js" --insecure-skip-tls-verify

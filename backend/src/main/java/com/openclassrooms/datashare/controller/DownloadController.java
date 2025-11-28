@@ -78,6 +78,7 @@ public class DownloadController {
         headers.add("X-File-Id", file.getId().toString());
         
         return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .headers(headers)
                 .body(resource);
     }

@@ -1,6 +1,6 @@
 ## Datashare - Sécurité de l'usine logicielle
 
-Cette documentation décrit les pratiques et outils utilisés pour assurer la sécurité de l'usine logicielle du projet DataShare, couvrant à la fois le backend (Java/Spring Boot/Maven) et le frontend (Angular/TypeScript/NPM).
+Cette documentation décrit les pratiques et outils utilisés pour assurer la sécurité de l'usine logicielle du projet DataShare, couvrant à la fois le backend (Java/Spring Boot/Maven), le frontend (Angular/TypeScript/NPM) et les images dockers.
 
 ### 1. Scan Dépendances Backend - OWASP Dependency-Check
 

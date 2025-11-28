@@ -1,0 +1,10 @@
+# Fichiers générés automatiquement
+.env
+test-files/
+results/
+influxdb_data/
+influxdb_config/
+grafana_data/
+
+# Logs
+*.log
