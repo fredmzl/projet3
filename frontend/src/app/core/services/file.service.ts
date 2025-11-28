@@ -126,4 +126,16 @@ export class FileService {
       responseType: 'blob'
     });
   }
+
+  /**
+   * Télécharge un fichier en tant que propriétaire (sans mot de passe)
+   * Endpoint authentifié : GET /api/download/owner/{token}
+   * @param token Token de téléchargement du fichier
+   * @returns Observable du blob du fichier
+   */
+  downloadFileAsOwner(token: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/download/owner/${token}`, {
+      responseType: 'blob'
+    });
+  }
 }

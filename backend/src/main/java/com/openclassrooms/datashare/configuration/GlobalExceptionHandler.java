@@ -1,5 +1,6 @@
 package com.openclassrooms.datashare.configuration;
 
+import com.openclassrooms.datashare.exception.AccessDeniedException;
 import com.openclassrooms.datashare.exception.FileExpiredException;
 import com.openclassrooms.datashare.exception.FileNotFoundException;
 import com.openclassrooms.datashare.exception.InvalidPasswordException;
@@ -138,5 +139,25 @@ public class GlobalExceptionHandler {
         
         log.warn("Invalid password attempt: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    /**
+     * Gère les erreurs d'accès refusé (US05 - Download owner).
+     * <p>
+     * Retourne HTTP 403 Forbidden quand un utilisateur tente d'accéder
+     * à une ressource qui ne lui appartient pas.
+     * 
+     * @param ex Exception AccessDeniedException
+     * @return Message d'erreur
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Forbidden");
+        error.put("message", ex.getMessage());
+        error.put("timestamp", LocalDateTime.now().toString());
+        
+        log.warn("Access denied: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 }

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { signal } from '@angular/core';
 import { of, throwError } from 'rxjs';
@@ -57,9 +57,10 @@ describe('FilesComponent', () => {
       currentUser: signal(mockUser)
     });
     
-    const fileSpy = jasmine.createSpyObj('FileService', ['getFiles', 'deleteFile', 'downloadFile']);
+    const fileSpy = jasmine.createSpyObj('FileService', ['getFiles', 'deleteFile', 'downloadFile', 'downloadFileAsOwner']);
     fileSpy.getFiles.and.returnValue(of({ files: [], totalElements: 0, totalPages: 0, currentPage: 0, pageSize: 10 }));
     fileSpy.downloadFile.and.returnValue(of(new Blob(['test'], { type: 'application/pdf' })));
+    fileSpy.downloadFileAsOwner.and.returnValue(of(new Blob(['test'], { type: 'application/pdf' })));
 
     const snackSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     const dialogSpyObj = jasmine.createSpyObj('MatDialog', ['open']);
@@ -275,7 +276,7 @@ describe('FilesComponent', () => {
   });
 
   describe('File Download', () => {
-    it('should download file using blob and create download link', () => {
+    it('should call downloadFileAsOwner and process blob correctly', (done) => {
       const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.returnValue('blob:mock-url');
       const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL');
       const createElementSpy = spyOn(document, 'createElement').and.returnValue({
@@ -286,10 +287,40 @@ describe('FilesComponent', () => {
 
       component.onDownloadFile(mockFile);
 
-      expect(fileServiceSpy.downloadFile).toHaveBeenCalledWith('token123', undefined);
-      expect(createObjectURLSpy).toHaveBeenCalledWith(jasmine.any(Blob));
-      expect(createElementSpy).toHaveBeenCalledWith('a');
-      expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
+      setTimeout(() => {
+        expect(fileServiceSpy.downloadFileAsOwner).toHaveBeenCalledWith('token123');
+        expect(createObjectURLSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+        expect(createElementSpy).toHaveBeenCalledWith('a');
+        expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
+        done();
+      }, 100);
+    });
+
+    it('should reload files when file is expired (410)', (done) => {
+      const error = { status: 410, message: 'File expired' };
+      fileServiceSpy.downloadFileAsOwner.and.returnValue(throwError(() => error));
+      spyOn(console, 'error');
+      const getFilesCallsBefore = fileServiceSpy.getFiles.calls.count();
+
+      component.onDownloadFile(mockFile);
+
+      setTimeout(() => {
+        expect(fileServiceSpy.getFiles.calls.count()).toBe(getFilesCallsBefore + 1);
+        done();
+      }, 100);
+    });
+
+    it('should call logout when 401 Unauthorized', (done) => {
+      const error = { status: 401, message: 'Unauthorized' };
+      fileServiceSpy.downloadFileAsOwner.and.returnValue(throwError(() => error));
+      spyOn(console, 'error');
+
+      component.onDownloadFile(mockFile);
+
+      setTimeout(() => {
+        expect(authServiceSpy.logout).toHaveBeenCalled();
+        done();
+      }, 100);
     });
   });
 

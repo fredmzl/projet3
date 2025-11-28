@@ -56,7 +56,7 @@ export class FilesComponent implements OnInit {
   totalPages = signal<number>(0);
   
   // Filtres
-  currentFilter = signal<FileFilter>('all');
+  currentFilter = signal<FileFilter>('active');
 
   // Computed signals pour les compteurs
   activeFilesCount = signal<number>(0);
@@ -144,18 +144,59 @@ export class FilesComponent implements OnInit {
   }
 
   /**
-   * Télécharge un fichier via une requête POST sans ouvrir d'onglet
+   * Télécharge un fichier en tant que propriétaire (sans demander le mot de passe)
+   * Utilise l'endpoint authentifié GET /api/download/owner/{token}
    */
   onDownloadFile(file: FileMetadata): void {
     // Extraire le token depuis l'URL de téléchargement
     const token = file.downloadUrl.split('/').pop()!;
     
-    // Si le fichier est protégé, demander le mot de passe
-    this.performDownload(token, file.filename);
+    // Télécharger directement en tant que propriétaire (pas de mot de passe requis)
+    this.performOwnerDownload(token, file.filename);
   }
 
   /**
-   * Effectue le téléchargement du fichier
+   * Effectue le téléchargement du fichier en tant que propriétaire (endpoint authentifié)
+   */
+  private performOwnerDownload(token: string, filename: string): void {
+    this.fileService.downloadFileAsOwner(token).subscribe({
+      next: (blob) => {
+        // Créer un lien temporaire pour déclencher le téléchargement
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement:', err);
+        let errorMessage = 'Erreur lors du téléchargement du fichier';
+        
+        if (err.status === 404) {
+          errorMessage = 'Fichier non trouvé';
+        } else if (err.status === 410) {
+          errorMessage = 'Le fichier a expiré';
+          // Recharger la liste pour mettre à jour l'affichage
+          this.loadFiles();
+        } else if (err.status === 403) {
+          errorMessage = 'Accès refusé : vous n\'êtes pas le propriétaire de ce fichier';
+        } else if (err.status === 401) {
+          errorMessage = 'Vous devez vous reconnecter';
+          this.authService.logout();
+        }
+        
+        this.snackBar.open(errorMessage, 'Fermer', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    });
+  }
+
+  /**
+   * Effectue le téléchargement du fichier (méthode legacy pour download public)
    */
   private performDownload(token: string, filename: string, password?: string): void {
     this.fileService.downloadFile(token, password).subscribe({

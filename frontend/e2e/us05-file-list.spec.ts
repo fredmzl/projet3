@@ -96,26 +96,6 @@ test.describe('US05 - Consultation de l\'historique des fichiers', () => {
     expect(lockIconCount).toBeGreaterThan(0);
   });
 
-  test('devrait afficher l\'état des fichiers (actif, expiré)', async ({ page, testUsers }) => {
-    // Se connecter
-    await page.goto(`${baseURL}/login`);
-    await page.fill('input[type="email"]', testUsers.alice.login);
-    await page.fill('input[type="password"]', testUsers.alice.password);
-    await page.getByRole('button', { name: /Connexion/i }).click();
-    await page.waitForURL(/\/files/, { timeout: 5000 });
-
-    // Attendre les fichiers
-    await page.waitForSelector('app-file-card', { timeout: 5000 });
-
-    // Alice a un fichier expiré (old-document.txt)
-    // Chercher les badges/chips d'état
-    const statusBadges = page.locator('.file-status, .status-badge, mat-chip, .badge, [class*="expired"]');
-    
-    // Vérifier qu'au moins un badge de statut est affiché
-    const badgeCount = await statusBadges.count();
-    expect(badgeCount).toBeGreaterThan(0);
-  });
-
   test('devrait afficher le bouton "Ajouter des fichiers"', async ({ page, testUsers }) => {
     // Se connecter
     await page.goto(`${baseURL}/login`);

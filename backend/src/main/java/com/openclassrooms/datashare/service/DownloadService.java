@@ -150,6 +150,64 @@ public class DownloadService {
     }
 
     /**
+     * Télécharge un fichier pour le propriétaire sans vérification de mot de passe
+     * Utilisé par l'endpoint /api/download/owner/{token} (US05)
+     * 
+     * @param token Token de téléchargement
+     * @return Resource Spring pointant vers le fichier
+     * @throws FileNotFoundException Si le fichier n'existe pas
+     * @throws FileExpiredException Si le fichier a expiré
+     */
+    public Resource downloadFileAsOwner(String token) {
+        log.info("Téléchargement propriétaire du fichier avec token: {}", token);
+        
+        // 1. Récupérer le fichier
+        File file = fileRepository.findByDownloadToken(token)
+                .orElseThrow(() -> {
+                    log.warn("Fichier non trouvé pour le token: {}", token);
+                    return new FileNotFoundException("Lien de téléchargement invalide");
+                });
+
+        log.debug("Fichier trouvé: {} (ID: {}, Taille: {} octets)", 
+                file.getOriginalFilename(), file.getId(), file.getFileSize());
+
+        // 2. Vérifier l'expiration
+        if (file.getExpirationDate().isBefore(LocalDateTime.now())) {
+            log.warn("Tentative de téléchargement d'un fichier expiré: {} (expiré le: {})", 
+                    file.getOriginalFilename(), file.getExpirationDate());
+            throw new FileExpiredException("Ce fichier a expiré et n'est plus disponible", file.getExpirationDate());
+        }
+
+        // 3. PAS de vérification de mot de passe (propriétaire authentifié)
+        if (file.getPasswordHash() != null) {
+            log.debug("Fichier protégé par mot de passe, mais téléchargement propriétaire (bypass): {}", 
+                    file.getOriginalFilename());
+        }
+
+        // 4. Charger le fichier depuis le système de fichiers
+        try {
+            Path filePath = storageLocation.resolve(file.getFilepath()).normalize();
+            log.debug("Chargement du fichier depuis: {}", filePath.toAbsolutePath());
+            
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists() || !resource.isReadable()) {
+                log.error("Fichier physique introuvable ou illisible: {}", filePath.toAbsolutePath());
+                throw new FileNotFoundException("Le fichier physique est introuvable ou illisible");
+            }
+
+            log.info("Téléchargement propriétaire réussi du fichier: {} (ID: {}, Taille: {} octets)", 
+                    file.getOriginalFilename(), file.getId(), file.getFileSize());
+            
+            return resource;
+        } catch (IOException e) {
+            log.error("Erreur IOException lors du chargement du fichier: {} - {}", 
+                    file.getOriginalFilename(), e.getMessage(), e);
+            throw new FileNotFoundException("Erreur lors de la lecture du fichier: " + e.getMessage());
+        }
+    }
+
+    /**
      * Récupère un fichier par son token (utile pour obtenir les métadonnées)
      * 
      * @param token Token de téléchargement

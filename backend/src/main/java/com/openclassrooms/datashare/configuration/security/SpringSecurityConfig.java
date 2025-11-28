@@ -79,6 +79,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         .requestMatchers("/api/download/**").permitAll()  // US01 - Download public
                         // Protected routes :
+                        .requestMatchers("/api/download/owner/**").authenticated()  // US05 - Download propriétaire (sans password)
                         .requestMatchers("/api/files/**").authenticated()
                         .anyRequest().authenticated()
                 )
