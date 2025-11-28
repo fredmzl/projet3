@@ -4,4 +4,4 @@
 set -e
 
 mise dev:db:show
-mise dev:dev:storage:show
+mise dev:storage:show

@@ -910,6 +910,151 @@
           }
         }
       }
+    },
+    "/api/download/owner/{token}": {
+      "get": {
+        "tags": [
+          "Download"
+        ],
+        "summary": "Télécharger son propre fichier en tant que propriétaire",
+        "description": "Permet à un utilisateur authentifié de télécharger son propre fichier sans fournir de mot de passe.\n\n**US05 - Consultation Historique**\n\nCet endpoint est utilisé depuis la page historique de l'utilisateur. Si le fichier est protégé par mot de passe, l'authentification JWT suffit pour le télécharger sans demander le mot de passe.\n\n**Vérifications effectuées :**\n1. L'utilisateur doit être authentifié (JWT valide)\n2. L'utilisateur doit être le propriétaire du fichier\n3. Le fichier ne doit pas être expiré\n\n**Différences avec POST /api/download/{token} :**\n- Requiert une authentification JWT\n- Bypass la vérification du mot de passe si l'utilisateur est propriétaire\n- Retourne 403 Forbidden si l'utilisateur n'est pas le propriétaire\n",
+        "operationId": "downloadFileAsOwner",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "description": "Token unique de téléchargement (UUID)",
+            "required": true,
+            "schema": {
+              "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+              "type": "string"
+            },
+            "example": "a3f8b2c9-4e7a-41f6-b8d3-2c9e5a1f7b4d"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fichier téléchargé avec succès",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Nom du fichier original",
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"rapport-financier-2024.pdf\""
+                }
+              },
+              "Content-Type": {
+                "description": "Type MIME du fichier",
+                "schema": {
+                  "type": "string",
+                  "example": "application/pdf"
+                }
+              },
+              "Content-Length": {
+                "description": "Taille du fichier en octets",
+                "schema": {
+                  "type": "integer",
+                  "format": "int64",
+                  "example": 2728960
+                }
+              },
+              "X-File-Id": {
+                "description": "Identifiant du fichier",
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "example": "7c9e6679-7425-40de-944b-e07fc1f90ae7"
+                }
+              },
+              "X-Owner-Download": {
+                "description": "Indicateur de téléchargement propriétaire",
+                "schema": {
+                  "type": "string",
+                  "example": "true"
+                }
+              }
+            },
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Contenu binaire du fichier",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
+          },
+          "403": {
+            "description": "Accès interdit - L'utilisateur n'est pas le propriétaire",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "notOwner": {
+                    "summary": "Pas le propriétaire du fichier",
+                    "value": {
+                      "error": "Forbidden",
+                      "message": "Vous n'êtes pas autorisé à télécharger ce fichier",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token invalide ou fichier non trouvé",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "invalidToken": {
+                    "summary": "Token invalide",
+                    "value": {
+                      "error": "Not Found",
+                      "message": "Lien de téléchargement invalide ou fichier non trouvé",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Fichier expiré",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "examples": {
+                  "expired": {
+                    "summary": "Fichier expiré",
+                    "value": {
+                      "error": "Gone",
+                      "message": "Le fichier a expiré",
+                      "expirationDate": "2025-01-14T10:45:00.000Z",
+                      "timestamp": "2025-01-15T10:45:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
     }
   },
   "components": {

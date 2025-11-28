@@ -7,6 +7,8 @@
       
     - une série de tests manuels QA a été élaborée. Ces tests couvrent les fonctionnalités principales et permettent de vérifier le bon fonctionnement de l'application dans divers scénarios d'utilisation. 
 
+    - Pour plus de détails, se référer à la page [TESTING.md](TESTING.md).
+
 ## Tests QA manuels 
 
 Les tests manuels QA ciblent directement l'API backend via des requêtes cURL. Ces tests sont, pour la plupart, transposables au test via le frontend en utilisant les jeux de données décrits pour chaque test.  
@@ -21,6 +23,7 @@ Ces tests permettront une montée en compétences rapide de l'équipe sur le fon
 | US04 - Téléversement de fichiers | [Tests manuels QA - US04](partials/tests/curl-tests-upload-file.md){:target="_blank"} |
 | US05 - Historique des fichiers | [Tests manuels QA - US05](partials/tests/curl-tests-list-files.md){:target="_blank"} |
 | US06 - Suppression de fichiers | [Tests manuels QA - US06](partials/tests/curl-tests-delete-file.md){:target="_blank"} |
+| Téléchargement de ses propres fichiers | [Tests manuels QA - Téléchargement de ses propres fichiers](partials/tests/curl-tests-own-files-download.md){:target="_blank"} |
 
 
 
@@ -30,7 +33,7 @@ Ces tests permettront une montée en compétences rapide de l'équipe sur le fon
 
 Le rapport de couverture de code est généré automatiquement lors de l'exécution des tests.
 
-[📊 Voir le rapport de couverture JaCoCo](backend-reports/index.html){:target="_blank"}
+[📊 Voir le rapport de couverture JaCoCo](../backend-reports/index.html){:target="_blank"}
 
 #### Génération du rapport
 
@@ -42,13 +45,10 @@ mise dev:backend:tests:coverage
 
 Le rapport sera disponible dans `backend/target/site/jacoco/index.html` et accessible via cette documentation.
 
-### Plan de tests
-
-[Plan de tests - Authentification](partials/tests/plan-tests-authentication.md){:target="_blank"}
 
 ### Exécution des tests
 
-#### Tests unitaires et d'intégration
+#### Tests unitaires
 
 ```bash
 # Tous les tests
@@ -60,7 +60,7 @@ mise dev:backend:tests:coverage
 
 #### Seuil de couverture
 
-Le projet impose un seuil minimum de **80% de couverture de code** (configuration JaCoCo dans `pom.xml`).
+Le projet impose un seuil minimum de **70% de couverture de code** (configuration JaCoCo dans `pom.xml`).
 
 ---
 
@@ -70,7 +70,7 @@ Le projet impose un seuil minimum de **80% de couverture de code** (configuratio
 
 Le rapport de couverture de code est généré automatiquement lors de l'exécution des tests avec couverture.
 
-[📊 Voir le rapport de couverture Karma](frontend-reports/index.html){:target="_blank"}
+[📊 Voir le rapport de couverture Karma](../frontend-reports/index.html){:target="_blank"}
 
 #### Génération du rapport
 
@@ -81,10 +81,6 @@ mise dev:frontend:tests:coverage
 ```
 
 Le rapport sera disponible dans `frontend/coverage/frontend/index.html`.
-
-### Plan de tests
-
-[Plan de tests - Frontend Angular](partials/tests/plan-tests-frontend.md){:target="_blank"}
 
 ### Exécution des tests
 

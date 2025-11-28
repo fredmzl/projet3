@@ -274,10 +274,10 @@ La sécurité de DataShare repose sur plusieurs couches de protection complémen
 
 **Documentation à inclure :**
 
-- **TESTING.md** : Plan de tests, critères d'acceptation, instructions d'exécution
-- **SECURITY.md** : Résultats du scan de sécurité + analyse des décisions
-- **PERF.md** : Test de performance d'un endpoint, résultats + interprétation
-- **MAINTENANCE.md** : Procédures de mise à jour, fréquence, risques
+- **[TESTING.md](./TESTING.md)** : Plan de tests, critères d'acceptation, instructions d'exécution
+- **[SECURITY.md](./SECURITY.md)** : Résultats du scan de sécurité + analyse des décisions
+- **[PERF.md](./PERF.md)** : Test de performance d'un endpoint, résultats + interprétation
+- **[MAINTENANCE.md](./MAINTENANCE.md)** : Procédures de mise à jour, fréquence, risques
 - **Captures** : Logs ou métriques de performance (navigateur, serveur)
 
 ---
