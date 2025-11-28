@@ -36,7 +36,10 @@ mise prepare
 
 # Déployer la documentation (localhost:8000)
 mise doc:start
+```
 
+**En mode dev local :**
+```bash
 # Démarrer l'application complète (backend + frontend)
 mise app:dev:start && sleep 5
 
@@ -51,6 +54,12 @@ mise app:dev:bootstrap
 
 # vérifier les data
 mise app:dev:showdata
+
+# Afficher les logs de l'backend en temps réel
+mise app:dev:logs
+
+# Arrêter l'application complète
+mise app:dev:stop
 ```
 
 L'application sera accessible sur :  
@@ -58,9 +67,30 @@ L'application sera accessible sur :
 - 🔌 Backend API : http://localhost:3000  
 - 📚 Documentation : http://localhost:8000 (avec `mise run doc:start`)  
 
+**En mode Docker (production) :**
+```bash 
+# Déployer l'application avec Docker (build images + start containers)
+mise app:docker:deploy --build && sleep 5
+
+# vérifier les data
+mise app:docker:showdata
+
+# Créer des données de démo
+mise app:docker:bootstrap
+
+# vérifier les data
+mise app:docker:showdata
+
+# Arrêter et détruire l'application Docker
+mise app:docker:destroy [--flush] [--rmi]
+```
+
+L'application sera accessible sur :  
+- 🌐 Frontend : https://www.datashare.projet3.oc  
+
 ### 4. Comptes de démonstration
 
-Après avoir exécuté `mise run app:bootstrap`, vous disposez de 2 utilisateurs de test :
+Après avoir exécuté `mise run app:[dev|docker]:bootstrap`, vous disposez de 2 utilisateurs de test :
 
 | Email | Mot de passe | Fichiers |
 |-------|--------------|----------|
@@ -71,7 +101,7 @@ Après avoir exécuté `mise run app:bootstrap`, vous disposez de 2 utilisateurs
 - Alice : `secret-notes.md` → mot de passe : `password`  
 - Bob : `private-data.txt` → mot de passe : `password`  
 
-### 5. Tester l'application
+### 5. Tester l'application (en mode dev)
 
 #### directement via le backend avec curl
 
@@ -98,29 +128,29 @@ curl -X POST "http://localhost:3000/api/download/{token}" \
 
 #### via l'interface web
 
-**se connecter et voir l'historique des fichiers**  
-1. Ouvrez votre navigateur et allez à l'adresse [http://localhost:4200](http://localhost:4200)  
-2. Connectez-vous avec les identifiants d'Alice ou Bob.  
-3. Explorez les fonctionnalités de l'application : téléversement, téléchargement, gestion des fichiers, etc.  
+**se connecter et voir l'historique des fichiers**    
+1. Ouvrez votre navigateur et allez à l'adresse [http://localhost:4200](http://localhost:4200)   
+2. Connectez-vous avec les identifiants d'Alice ou Bob.    
+3. Explorez les fonctionnalités de l'application : téléversement, téléchargement, gestion des fichiers, etc.    
 
-**Tester le téléchargement d'un fichier non protégé**  
-1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb](http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb)  
-2. cliquer sur le bouton de téléchargement  
-3. Le téléchargement du fichier devrait commencer automatiquement  
+**Tester le téléchargement d'un fichier non protégé**    
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb](http://localhost:4200/download/93ae4861-3dba-424a-bb60-28bf31640cfb)   
+2. cliquer sur le bouton de téléchargement    
+3. Le téléchargement du fichier devrait commencer automatiquement    
 
-**Tester le téléchargement d'un fichier protégé**  
-1. Depuis l'interface web, essayez de télécharger un fichier protégé (ex: `secret-notes.md` pour Alice), à l'adresse suivante [http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b](http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b)  
-2. Une fenêtre modale apparaîtra vous demandant le mot de passe.  
-3. Entrez le mot de passe correct (`password`) et validez.  
-4. Le téléchargement du fichier devrait commencer automatiquement si le mot de passe est correct.    
+**Tester le téléchargement d'un fichier protégé**    
+1. Depuis l'interface web, essayez de télécharger un fichier protégé (ex: `secret-notes.md` pour Alice), à l'adresse suivante [http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b](http://localhost:4200/download/13c0ab76-8cb4-43d6-a9ac-a31da32f148b)    
+2. Une fenêtre modale apparaîtra vous demandant le mot de passe.    
+3. Entrez le mot de passe correct (`password`) et validez.    
+4. Le téléchargement du fichier devrait commencer automatiquement si le mot de passe est correct.      
+ 
+**Tester le téléchargement d'un fichier expiré**    
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb)    
+2. Une alerte apparaîtra indiquant que le lien a expiré.    
 
-**Tester le téléchargement d'un fichier expiré**  
-1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649035e-da13-4c59-bb30-bd9f599d53cb)  
-2. Une alerte apparaîtra indiquant que le lien a expiré.  
-
-**Tester le téléchargement avec un token invalide**  
-1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb)  
-2. Une alerte apparaîtra indiquant que le fichier n'existe pas.  
+**Tester le téléchargement avec un token invalide**    
+1. Depuis l'interface web, essayez de télécharger un fichier non protégé (ex: `public-report.pdf` pour Alice), à l'adresse suivante [http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb](http://localhost:4200/download/c649435e-da13-4c59-bb30-bd9f599d53cb)    
+2. Une alerte apparaîtra indiquant que le fichier n'existe pas.    
 
 ---
 
@@ -128,18 +158,51 @@ curl -X POST "http://localhost:3000/api/download/{token}" \
 
 Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de développement.
 
+### Utilisation
+
+```bash
+# Lister toutes les tâches disponibles
+mise tasks
+
+# Exécuter une tâche
+mise <nom-de-la-tache>
+
+# Exemple : démarrer le backend en mode dev
+mise app:dev:start
+
+# Exemple : déployer en mode Docker
+mise app:docker:deploy --build
+```
+
 ### Application complète
 
+#### bootstrap environnement de dev 
+
 | Commande | Description |
-|----------|-------------|  
-| `mise app:start` | Démarre l'application complète (backend + frontend) |
-| `mise app:restart` | Redémarre l'application complète |
-| `mise app:bootstrap` | Crée des données de démonstration (utilisateurs + fichiers) |
-| `mise app:stop` | Arrête l'application complète |
-| `mise app:health` | Vérifie l'état de santé de l'application en cours d'exécution |
-| `mise app:reset` | Arrête l'application et efface toutes les données (database + storage) |
-| `mise app:reset --restart` | Efface toutes les données (database + storage) et redémarre l'application |
-| `mise app:showdata` | Affiche le contenu de la base de données et du storage |
+|----------|-------------|
+| `mise prepare` | Vérifie les prérequis et prépare l'environnement de développement |
+
+#### Mode Dev (Local)
+
+| Commande | Description |
+|----------|-------------|
+| `mise app:dev:start` | Démarre l'application complète en mode dev (backend + frontend) |
+| `mise app:dev:stop` | Arrête l'application complète |
+| `mise app:dev:restart` | Redémarre l'application complète |
+| `mise app:dev:bootstrap` | Crée des données de démonstration (utilisateurs + fichiers) |
+| `mise app:dev:health` | Vérifie l'état de santé de l'application en cours d'exécution |
+| `mise app:dev:showdata` | Affiche le contenu de la base de données et du storage |
+| `mise app:dev:reset` | Arrête l'application et efface toutes les données (database + storage) |
+
+#### Mode Docker (Production)
+
+| Commande | Description |
+|----------|-------------|
+| `mise app:docker:deploy` | Déploie l'application avec Docker (build images + start containers) |
+| `mise app:docker:deploy --build` | Déploie avec rebuild des images Docker |
+| `mise app:docker:destroy` | Détruit l'application Docker (stop + remove containers) |
+| `mise app:docker:bootstrap` | Crée des données de démonstration dans Docker |
+| `mise app:docker:showdata` | Affiche le contenu de la base de données et du storage Docker |
 
 ### Documentation
 
@@ -172,7 +235,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 | `mise frontend:log` | Affiche les logs du frontend en temps réel |
 | `mise frontend:tests:all` | Exécute tous les tests frontend (single run) |
 | `mise frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
-| `mise frontend:tests:e2e` | Exécute les tests e2e |
+| `mise frontend:tests:e2e` | Exécute les tests e2e Playwright |
 
 ### Base de données
 
@@ -180,7 +243,7 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 |----------|-------------|
 | `mise db:show` | Affiche le contenu des tables de la base de données |
 | `mise db:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
-| `mise db:flush --storage` | Supprime la base de données ET tous les fichiers du storage |
+| `mise db:seed` | Crée un utilisateur de test pour les tests E2E |
 
 ### Storage
 
@@ -188,31 +251,6 @@ Ce projet utilise [Mise](https://mise.jdx.dev/) pour automatiser les tâches de 
 |----------|-------------|
 | `mise storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
 | `mise storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
-
-### Données (Database + Storage)
-
-| Commande | Description |
-|----------|-------------|
-| `mise showdata` | Affiche le contenu de la base de données et du storage |
-
-### Configuration
-
-| Commande | Description |
-|----------|-------------|
-| `mise prepare` | Installe les dépendances Python pour la documentation |
-
-### Utilisation
-
-```bash
-# Lister toutes les tâches disponibles
-mise tasks
-
-# Exécuter une tâche
-mise <nom-de-la-tache>
-
-# Exemple : démarrer le backend
-mise backend:start
-```
 
 ---
 

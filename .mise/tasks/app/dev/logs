@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#MISE description="Display real-time logs for development backend and frontend"
+
+set -e
+
+# Trap CTRL+C pour exit proprement
+trap 'exit 0' INT
+
+echo "=========================================="
+echo "📋 Displaying development logs"
+echo "------------------------------------------"
+
+cd "$MISE_CONFIG_ROOT" || exit 1
+tail -f ./backend/backend.log ./frontend/frontend.log -n 50

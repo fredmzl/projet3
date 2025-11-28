@@ -1,5 +1,21 @@
 # Architecture de l'Application DataShare
 
+## Infrastructure
+
+L'application datashare est déployée à l'aide de Docker Compose, orchestrant les services suivants :    
+
+| module | description |  
+|--------|-------------|  
+| **backend** | Service Spring Boot exposant l'API REST |  
+| **frontend** | Application Angular servie via un serveur Nginx |  
+| **postgres** | Base de données PostgreSQL pour la persistance des données |  
+| **reverse-proxy** | Nginx agissant comme point d'entrée unique avec SSL/TLS |  
+
+Le composant reverse-proxy gère le routage des requêtes entrantes vers les services backend et frontend, tout en assurant la sécurité des communications via HTTPS. Il est le seul exposé publiquement. Les autres composants communiquent uniquement en interne au sein d'un réseau Docker dédié.  
+  
+![Infrastructure Diagram](./assets/infra.png)
+
+---
 ## 📐 Diagramme d'Architecture
 
 ![Architecture Diagram](./assets/architecture_simple.svg)
@@ -111,13 +127,9 @@
 
 ![Architecture détaillée](./assets/architecture_details.svg)
 
-## 🔍 Description de l'Architecture Détaillée
+## 🔄 Flux de Requêtes
 
-Cette section détaille le flux de données et les interactions entre les différentes couches de l'application.
-
-### 🔄 Flux de Requêtes
-
-#### Requête Authentifiée
+### Requête Authentifiée
 
 ```mermaid
 sequenceDiagram
@@ -148,7 +160,7 @@ sequenceDiagram
     F-->>U: UI Update
 ```
 
-#### Requête Anonyme (Téléchargement)
+### Requête Anonyme (Téléchargement)
 
 ```mermaid
 sequenceDiagram
@@ -248,10 +260,10 @@ La sécurité de DataShare repose sur plusieurs couches de protection complémen
 !!! success "Mécanismes de sécurité"
     - **[Authentification JWT](./security/jwt.md)** : JSON Web Tokens pour les endpoints protégés
     - **[Rôles et Permissions](./security/roles_permissions.md)** : Modèle simplifié pour contrôler l'accès aux ressources
-    - **[Chiffrement des mots de passe](./security/chiffrement_password.md)** : bcrypt pour les mots de passe, HTTPS pour les communications
-    - **[Chiffrement des communications](./security/chiffrement_communications.md)** : Utilisation obligatoire de HTTPS
+    - **[Chiffrement des mots de passe](./security/chiffrement_password.md)** : bcrypt pour les mots de passe
+    - **[Chiffrement des communications](./security/chiffrement_communications.md)** : TLS 1.2/1.3, certificats SSL/TLS, HTTPS obligatoire, CORS, ...  
     - **[Validation des données](./security/validation_donnees.md)** : Contrôles côté serveur sur toutes les entrées utilisateur
-    - **[Limitations](./security/limitations.md)** : Restrictions de taille, rate limiting, timeouts
+    - **[Limitations](./security/limitations.md)** : Restrictions de taille (16 MB max), timeouts (60s), buffering désactivé pour uploads
 
 ---
 

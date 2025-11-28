@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: ./backend/docker/Dockerfile
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-datashare}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-db_user}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-db_password}

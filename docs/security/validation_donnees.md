@@ -99,10 +99,10 @@ response.setHeader("X-Content-Type-Options", "nosniff");
 response.setHeader("Content-Type", "application/json; charset=UTF-8");
 ```
 
-**Protection côté frontend :**
-- Angular sanitize automatiquement le contenu
-- Utiliser `[innerText]` plutôt que `[innerHTML]`
-- Valider et encoder les données affichées
+**Protection côté frontend :**  
+- Angular sanitize automatiquement le contenu  
+- Utiliser `[innerText]` plutôt que `[innerHTML]`  
+- Valider et encoder les données affichées  
 
 ---
 
@@ -119,14 +119,14 @@ response.setHeader("Content-Type", "application/json; charset=UTF-8");
 
 ### Pourquoi CSRF n'est pas un problème ici ?
 
-**CSRF nécessite :**
-1. Cookies envoyés automatiquement par le navigateur
-2. Session basée sur cookies
+**CSRF nécessite :**  
+1. Cookies envoyés automatiquement par le navigateur  
+2. Session basée sur cookies  
 
-**DataShare utilise :**
-1. JWT dans header `Authorization: Bearer <token>`
-2. Headers explicites (pas automatiques)
-3. JavaScript requis pour envoyer les headers
+**DataShare utilise :**  
+1. JWT dans header `Authorization: Bearer <token>`  
+2. Headers explicites (pas automatiques)  
+3. JavaScript requis pour envoyer les headers  
 
 ---
 
@@ -184,28 +184,28 @@ public class FileController {
 
 ## 📋 Checklist de Validation
 
-!!! tip "À vérifier systématiquement"
-    **Authentification**
-    - [ ] JWT valide et non expiré
-    - [ ] Utilisateur existe en base
-    - [ ] Permissions suffisantes
+!!! tip "À vérifier systématiquement"  
+    **Authentification**  
+    - JWT valide et non expiré  
+    - Utilisateur existe en base  
+    - Permissions suffisantes  
     
-    **Upload de fichiers**
-    - [ ] Taille maximale respectée (100MB)
-    - [ ] Type MIME autorisé (whitelist)
-    - [ ] Nom de fichier sanitizé (pas de path traversal)
-    - [ ] Extension validée
+    **Upload de fichiers**  
+    - Taille maximale respectée (100MB)  
+    - Type MIME autorisé (whitelist)  
+    - Nom de fichier sanitizé (pas de path traversal)  
+    - Extension validée
     
-    **Formulaires**
-    - [ ] Tous les champs requis présents
-    - [ ] Format des données valide
-    - [ ] Longueurs min/max respectées
-    - [ ] Caractères spéciaux gérés
+    **Formulaires**  
+    - Tous les champs requis présents  
+    - Format des données valide  
+    - Longueurs min/max respectées  
+    - Caractères spéciaux gérés  
     
-    **Identifiants**
-    - [ ] Format UUID valide
-    - [ ] Ressource existe
-    - [ ] Utilisateur propriétaire de la ressource
+    **Identifiants**  
+    - Format UUID valide  
+    - Ressource existe  
+    - Utilisateur propriétaire de la ressource  
 
 ---
 
