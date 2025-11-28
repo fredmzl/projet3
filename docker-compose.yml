@@ -16,7 +16,6 @@ services:
   backend:
     image: datashare-backend:latest
     ports:
-    # - "3000:3000"
     - "3000"
     build:
       context: .
@@ -26,11 +25,11 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-datashare}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-db_user}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-db_password}
+      DOWNLOAD_BASE_URL: ${DOWNLOAD_BASE_URL:-https://www.datashare.projet3.oc/api/download}
     volumes:
       - datashare-storage:/var/datashare/storage
     networks:
       - datashare-net
-      # - default
     depends_on:
       - postgres
 
@@ -38,13 +37,11 @@ services:
     image: datashare-frontend:latest
     ports:
     - "4200"
-    # - "4200"
     build:
       context: .
       dockerfile: ./frontend/docker/Dockerfile
     networks:
       - datashare-net
-      # - default
     depends_on:
       - backend
 

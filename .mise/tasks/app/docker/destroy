@@ -20,16 +20,14 @@ fi
 
 if [ "$FLUSH_" = true ]; then
     echo "⚠️  This will delete ALL database data AND all storage files!"
+    read -p "Are you sure? (yes/no): " confirmation
+    if [ "$confirmation" != "yes" ]; then
+        echo "❌ Operation cancelled"
+        exit 0
+    fi
     ARGS="--volumes $ARGS"
-else
-    echo "⚠️  This will delete ALL database data!"
 fi
-read -p "Are you sure? (yes/no): " confirmation
 
-if [ "$confirmation" != "yes" ]; then
-    echo "❌ Operation cancelled"
-    exit 0
-fi
 
 echo "🛑 Stopping DataShare application..."
 docker compose down $ARGS

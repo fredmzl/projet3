@@ -40,9 +40,18 @@ echo ""
 
 # Message de succès
 echo "🎉 DataShare application deployed successfully!"
-echo "You can access the frontend at http://[your_ip]:80"
+echo ""
+echo "ℹ️  Note: Remember to enroll the DataShare intermediate CA certificate in your trusted certificate store if needed:"
+echo "${MISE_CONFIG_ROOT}/docker/pki/intermediate/certs/intermediate_server_ca.cert.pem"
+echo ""
+echo "You can access the frontend at http://[your_ip]:443"
+echo ""
+echo "You can seed data by running: mise app:docker:bootstrap"
 echo ""
 echo "To stop the application, run: mise app:docker:destroy [--flush] [--rmi]"
 echo "======================================================================="
+
+
+
 
 

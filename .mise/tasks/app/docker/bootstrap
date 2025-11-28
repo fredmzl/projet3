@@ -16,5 +16,5 @@ if [ "$confirmation" != "yes" ]; then
 fi
 
 # Exécuter le script de seed
-"${MISE_CONFIG_ROOT}/.mise/scripts/app-bootstrap.sh"
+"${MISE_CONFIG_ROOT}/.mise/scripts/docker-app-bootstrap.sh"
 
