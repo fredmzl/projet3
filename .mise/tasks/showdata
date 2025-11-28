@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Development workflow : Show database and storage data"
+
+set -e
+
+mise dev:db:show
+mise dev:storage:show

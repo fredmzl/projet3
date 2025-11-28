@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#MISE description="Development workflow : Restart application"
+
+set -e
+
+# Stop application
+echo "🛑 Stopping application..."
+mise run stop 2>/dev/null || echo "   Services already stopped"
+echo ""
+
+echo "🔄 Restarting application..."
+mise run start
+
+
+
+
+
+
+
+

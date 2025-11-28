@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Reset application and all data (database + storage)"
+#MISE description="Development workflow : Reset application and all data (database + storage)"
 #MISE arg "--restart" help="restart app after reset" default="false"
 
 set -e
@@ -34,7 +34,7 @@ echo ""
 
 # Stop application
 echo "🛑 Stopping application..."
-mise run app:dev:stop 2>/dev/null || echo "   Services already stopped"
+mise run stop 2>/dev/null || echo "   Services already stopped"
 echo ""
 
 # Flush database and storage
@@ -44,7 +44,7 @@ echo ""
 # Restart application if requested
 if [ "$RESTART" = true ]; then
     echo "🔄 Restarting application..."
-    mise run app:dev:start
+    mise run start
     echo ""
 else
     echo "=========================================="
@@ -52,8 +52,8 @@ else
     echo "=========================================="
     echo ""
     echo "📋 Next steps:"
-    echo "   mise run app:dev:start              - Start application"
-    echo "   mise run app:dev:bootstrap     - Create test data"
+    echo "   mise run start              - Start application"
+    echo "   mise run bootstrap     - Create test data"
     echo ""
 fi
 

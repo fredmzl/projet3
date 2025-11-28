@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Display real-time logs for development backend and frontend"
+#MISE description="Development workflow : Display real-time logs for development backend and frontend"
 
 set -e
 

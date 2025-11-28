@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Stop complete application (backend + frontend)"
+#MISE description="Development workflow : Stop complete application (backend + frontend)"
 
 set -e
 

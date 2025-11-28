@@ -24,7 +24,7 @@ echo ""
 
 # 1. Seed des données de test
 echo "📦 Étape 1/2: Seed des données de test"
-mise run dev:app:bootstrap
+mise bootstrap
 
 echo ""
 echo "================================================================"

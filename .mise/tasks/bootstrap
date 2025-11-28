@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Bootstrap demo data with users and files (database + storage)"
+#MISE description="Development workflow : Bootstrap demo data with users and files (database + storage)"
 set -e
 
 echo "🚀 Bootstrapping DataShare with demo data..."

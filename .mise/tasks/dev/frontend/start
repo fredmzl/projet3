@@ -21,7 +21,7 @@ fi
 
 # démarrer le frontend
 cd "${MISE_CONFIG_ROOT}/frontend" || exit 1
-nohup npm start > frontend.log 2>&1 &
+nohup npm start > ${MISE_CONFIG_ROOT}/logs/frontend.log 2>&1 &
 echo $! > "$PIDFILE"
 
 echo "✅ Frontend started (PID: $(cat $PIDFILE)). Check frontend.log for details."

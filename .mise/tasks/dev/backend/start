@@ -42,7 +42,7 @@ fi
 
 # démarrer le backend
 cd "${MISE_CONFIG_ROOT}/backend" || exit 1
-nohup mvn spring-boot:run > backend.log 2>&1 &
+nohup mvn spring-boot:run > ${MISE_CONFIG_ROOT}/logs/backend.log 2>&1 &
 echo $! > "$PIDFILE"
 
 echo "✅ Backend started (PID: $(cat $PIDFILE)). Check backend.log for details."

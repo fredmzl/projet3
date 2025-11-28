@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Start complete application (backend + frontend)"
+#MISE description="Development workflow : Start complete application (backend + frontend)"
 
 set -e
 
