@@ -1,4 +1,4 @@
-# 🧪 Tests manuels cURL — Suppression de Fichiers (DELETE /api/files/{fileId})
+# 🧪 Tests manuels cURL — Suppression de Fichiers (US06)
 
 ## 📋 Prérequis
 

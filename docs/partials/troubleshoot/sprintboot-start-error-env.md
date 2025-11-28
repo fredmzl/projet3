@@ -16,7 +16,7 @@
 
     ### 💡 Solution
     Rendre le chargement du fichier `.env` optionnel en modifiant la configuration Spring Boot.
-    Dans [Appconfig.java](../../backend/src/main/java/com/openclassrooms/datashare/configuration/AppConfig.java), ajouter la ligne `configurer.setIgnoreResourceNotFound(true);` comme suit :
+    Dans `/backend/src/main/java/com/openclassrooms/datashare/configuration/AppConfig.java`, ajouter la ligne `configurer.setIgnoreResourceNotFound(true);` comme suit :
 
     ```java
     @Configuration

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#MISE description="Start frontend server"
+
+set -e
+PIDFILE="${MISE_CONFIG_ROOT}/.frontend.pid"
+
+# Vérifier si déjà lancé
+if [ -f "$PIDFILE" ]; then
+    PID=$(cat "$PIDFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "❌ Frontend is already running (PID: $PID)"
+        exit 1
+    fi
+fi
+
+# Vérifier le port
+if lsof -ti :4200 > /dev/null; then
+    echo "❌ Port 4200 already in use"
+    exit 1
+fi
+
+# démarrer le frontend
+cd "${MISE_CONFIG_ROOT}/frontend" || exit 1
+nohup npm start > frontend.log 2>&1 &
+echo $! > "$PIDFILE"
+
+echo "✅ Frontend started (PID: $(cat $PIDFILE)). Check frontend.log for details."

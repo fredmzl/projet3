@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+#MISE description="Show storage directory structure recursively"
+
+set -e
+
+STORAGE_PATH="/var/datashare/storage"
+
+if [ ! -d "$STORAGE_PATH" ]; then
+    echo "❌ Storage directory does not exist: $STORAGE_PATH"
+    exit 1
+fi
+
+echo "📁 Storage structure: $STORAGE_PATH"
+echo ""
+
+# Check if directory is empty
+if [ -z "$(ls -A $STORAGE_PATH)" ]; then
+    echo "   (empty)"
+    exit 0
+fi
+
+# Use tree if available, otherwise use find with custom formatting
+if command -v tree &> /dev/null; then
+    tree -L 5 "$STORAGE_PATH"
+else
+    # Custom recursive display using find
+    find "$STORAGE_PATH" -print
+fi
+
+echo ""
+echo "📊 Statistics:"
+echo "   Total files: $(find "$STORAGE_PATH" -type f | wc -l)"
+echo "   Total size: $(du -sh "$STORAGE_PATH" 2>/dev/null | cut -f1)"

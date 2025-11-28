@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+#MISE description="Seed database with test user for E2E tests"
+set -e
+
+echo "🌱 Seeding database with test data..."
+echo "================================================================"
+
+# Demander confirmation
+echo "⚠️  This will DELETE existing database data!"
+read -p "Are you sure? (yes/no): " confirmation
+if [ "$confirmation" != "yes" ]; then
+    echo "❌ Operation cancelled"
+    exit 0
+fi
+
+# Execute le script de seed
+${MISE_CONFIG_ROOT}/.mise/scripts/e2e-test-data.sh
+
+echo ""
+echo "================================================================"
+echo "✅ Database seeded successfully!"
+echo "   Test user: testuser@example.net / password"

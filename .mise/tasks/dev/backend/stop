@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#MISE description="Stop backend server"
+
+set -e
+PIDFILE="${MISE_CONFIG_ROOT}/.backend.pid"
+
+if [ ! -f "$PIDFILE" ]; then
+    echo "❌ Backend is not running (no PID file found)"
+    exit 1
+fi
+
+PID=$(cat "$PIDFILE")
+
+if ps -p "$PID" > /dev/null 2>&1; then
+    echo "Stopping backend server (PID: $PID)..."
+    kill "$PID"
+    rm "$PIDFILE"
+    echo "✅ Backend stopped"
+else
+    echo "❌ Process not found (cleaning up PID file)"
+    rm "$PIDFILE"
+    exit 1
+fi

@@ -27,7 +27,7 @@ echo ""
 echo -e "${BLUE}🔍 Checking PostgreSQL container...${NC}"
 if ! docker compose -f "${COMPOSE_FILE}" ps postgres 2>/dev/null | grep -q "Up"; then
     echo -e "${RED}❌ PostgreSQL container is not running!${NC}"
-    echo "Please start the app first: mise app:docker:deploy"
+    echo "Please start the app first: mise infra:deploy"
     exit 1
 fi
 echo -e "${GREEN}✅ PostgreSQL is running${NC}"
@@ -59,7 +59,7 @@ BOB_ID=$(docker compose -f "${COMPOSE_FILE}" exec -T postgres \
 echo -e "${BLUE}🔍 Checking backend container...${NC}"
 if ! docker compose -f "${COMPOSE_FILE}" ps backend 2>/dev/null | grep -q "Up"; then
     echo -e "${RED}❌ Backend container is not running!${NC}"
-    echo "Please start the app first: mise app:docker:deploy"
+    echo "Please start the app first: mise infra:deploy"
     exit 1
 fi
 echo -e "${GREEN}✅ Backend is running${NC}"

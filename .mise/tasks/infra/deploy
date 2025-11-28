@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#MISE description="Deploy datashare application (build images + start containers)"
+#MISE arg "--build" help="Build Docker images before starting containers"
+
+set -e
+
+cd ${MISE_CONFIG_ROOT} || exit 1
+
+echo "🚀 Deploying DataShare application..."
+echo "================================================================"
+echo ""
+
+# Build des images Docker
+echo "🔨 Building Docker images..."
+if [[ "$1" == "--build" ]] || [[ "$2" == "--build" ]]; then
+    docker compose build
+    echo "✅ Docker images built successfully!"
+else
+    echo "ℹ️ Skipping Docker image build."
+fi
+echo "================================================================" 
+echo ""
+
+# Démarrer les conteneurs
+echo "🚀 Starting Docker containers..."
+docker compose up -d
+echo "✅ Docker containers started successfully!"
+echo "================================================================"
+echo ""
+
+# rediriger les logs des containers vers des fichiers
+echo "📥 Redirecting container logs to files..."
+mkdir -p ./logs
+docker compose logs -f backend > ./logs/backend.log 2>&1 &
+docker compose logs -f frontend > ./logs/frontend.log 2>&1 &
+docker compose logs -f postgresql > ./logs/postgresql.log 2>&1 &
+echo "✅ Logs are being redirected to backend.log, frontend.log, and postgresql.log"
+echo "=============================================================================="
+echo ""
+
+# Message de succès
+echo "🎉 DataShare application deployed successfully!"
+echo ""
+echo "ℹ️  Note: Remember to enroll the DataShare intermediate CA certificate in your trusted certificate store if needed:"
+echo "${MISE_CONFIG_ROOT}/docker/pki/intermediate/certs/intermediate_server_ca.cert.pem"
+echo ""
+echo "You can access the frontend at http://[your_ip]:443"
+echo ""
+echo "You can seed data by running: mise infra:bootstrap"
+echo ""
+echo "To stop the application, run: mise infra:destroy [--flush] [--rmi]"
+echo "======================================================================="
+
+
+
+
+

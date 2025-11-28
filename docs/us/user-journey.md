@@ -30,31 +30,6 @@
 
 ---
 
-## 🎯 Objectifs des User Stories
-
-### 1. Gestion des Comptes (US02, US03)
-**Périmètre** : Inscription, connexion, authentification
-
-: Permettre aux utilisateurs de créer un compte sécurisé
-: Fournir un système d'authentification robuste basé sur JWT
-: Valider les données utilisateur côté client et serveur
-
-### 2. Gestion des Fichiers (US04, US05, US06)
-**Périmètre** : Upload, consultation, suppression
-
-: Permettre l'upload de fichiers avec validation de type et taille
-: Fournir un historique complet des fichiers uploadés
-: Permettre la suppression sécurisée des fichiers
-
-### 3. Partage Public (US01)
-**Périmètre** : Téléchargement anonyme
-
-: Permettre le téléchargement de fichiers sans authentification
-: Générer des liens de partage sécurisés et uniques
-: Suivre les statistiques de téléchargement
-
----
-
 ## 🔄 Diagramme de Navigation
 
 ```mermaid
@@ -117,27 +92,4 @@ graph TD
 
 ---
 
-## 🧪 Critères d'Acceptation Globaux
-
-!!! tip "Tests transversaux à valider"
-    ### Frontend
-    - [ ] Toutes les pages sont responsives (mobile, tablet, desktop)
-    - [ ] Les formulaires ont une validation temps réel
-    - [ ] Les messages d'erreur sont clairs et contextuels
-    - [ ] Les états de chargement sont visibles (loaders)
-    - [ ] Navigation fluide entre les pages
-    
-    ### Backend
-    - [ ] Tous les endpoints retournent les codes HTTP appropriés
-    - [ ] Les erreurs sont loguées avec stack trace
-    - [ ] Les validations côté serveur sont strictes
-    - [ ] Rate limiting actif sur tous les endpoints sensibles
-    - [ ] CORS configuré correctement
-    
-    ### Sécurité
-    - [ ] HTTPS en production
-    - [ ] JWT avec expiration (24h)
-    - [ ] Mots de passe hashés avec bcrypt
-    - [ ] Protection contre injections SQL
-    - [ ] Sanitization des inputs utilisateur
 

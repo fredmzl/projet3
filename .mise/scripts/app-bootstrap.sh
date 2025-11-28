@@ -26,7 +26,7 @@ echo ""
 echo -e "${BLUE}🔍 Checking PostgreSQL container...${NC}"
 if ! docker compose -f "$SCRIPT_DIR/../../backend/compose.yaml" ps postgresql 2>/dev/null | grep -q "Up"; then
     echo -e "${RED}❌ PostgreSQL container is not running!${NC}"
-    echo "Please start the backend first: mise backend:start"
+    echo "Please start the backend first: mise dev:backend:start"
     exit 1
 fi
 echo -e "${GREEN}✅ PostgreSQL is running${NC}"

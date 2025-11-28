@@ -16,7 +16,7 @@ Le composant reverse-proxy gère le routage des requêtes entrantes vers les ser
 ![Infrastructure Diagram](./assets/infra.png)
 
 ---
-## 📐 Diagramme d'Architecture
+## 📐 Diagramme d'Architecture (dev)
 
 ![Architecture Diagram](./assets/architecture_simple.svg)
 
@@ -285,7 +285,7 @@ La sécurité de DataShare repose sur plusieurs couches de protection complémen
 ## 🚀 Installation et Exécution
 
 !!! info "Prérequis"
-    Consultez la section [Getting started](./index.md#getting-started) pour les instructions détaillées.
+    Consultez la section [Getting started](./index.md#"Quick start") pour les instructions détaillées.
 
 !!! warning "Section en cours de rédaction"
     Cette section fournira un guide complet pour installer et exécuter l'application DataShare.

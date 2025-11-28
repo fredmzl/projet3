@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#MISE description="Start backend server"
+
+set -e
+PIDFILE="${MISE_CONFIG_ROOT}/.backend.pid"
+
+# Vérifier si déjà lancé
+if [ -f "$PIDFILE" ]; then
+    PID=$(cat "$PIDFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "❌ Backend is already running (PID: $PID)"
+        exit 1
+    fi
+fi
+
+
+# Charger la configuration CORS si le fichier existe
+if [ -f "${MISE_CONFIG_ROOT}/backend/.env.cors" ]; then
+    echo "📥 Loading CORS configuration from .env.cors"
+    source "${MISE_CONFIG_ROOT}/backend/.env.cors"
+fi
+
+# Configuration de l'URL de téléchargement
+# Par défaut, utilise localhost:4200/download (page frontend Angular)
+if [ -z "$DOWNLOAD_BASE_URL" ]; then
+    export DOWNLOAD_BASE_URL="http://localhost:4200/download"
+    echo "🔗 Download URL auto-configured: $DOWNLOAD_BASE_URL"
+fi
+
+# Vérifier le port
+if lsof -ti :3000 > /dev/null; then
+    echo "❌ Port 3000 already in use"
+    exit 1
+fi
+
+# vérifier que le storage local existe
+STORAGE_DIR="/var/datashare/storage"
+if [ ! -d "$STORAGE_DIR" ]; then
+    echo "📁 Creating local storage directory at $STORAGE_DIR"
+    mkdir -p "$STORAGE_DIR"
+fi
+
+# démarrer le backend
+cd "${MISE_CONFIG_ROOT}/backend" || exit 1
+nohup mvn spring-boot:run > backend.log 2>&1 &
+echo $! > "$PIDFILE"
+
+echo "✅ Backend started (PID: $(cat $PIDFILE)). Check backend.log for details."

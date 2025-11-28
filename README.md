@@ -41,25 +41,25 @@ mise doc:start
 **En mode dev local :**
 ```bash
 # Démarrer l'application complète (backend + frontend)
-mise app:dev:start && sleep 5
+mise dev:app:start && sleep 5
 
 # vérifier l'état de l'application
-mise app:dev:health
+mise dev:app:health
 
 # vérifier les data
-mise app:dev:showdata
+mise dev:app:showdata
 
 # Créer des données de démo
-mise app:dev:bootstrap
+mise dev:app:bootstrap
 
 # vérifier les data
-mise app:dev:showdata
+mise dev:app:showdata
 
 # Afficher les logs de l'backend en temps réel
-mise app:dev:logs
+mise dev:app:logs
 
 # Arrêter l'application complète
-mise app:dev:stop
+mise dev:app:stop
 ```
 
 L'application sera accessible sur :  
@@ -70,19 +70,19 @@ L'application sera accessible sur :
 **En mode Docker (production) :**
 ```bash 
 # Déployer l'application avec Docker (build images + start containers)
-mise app:docker:deploy --build && sleep 5
+mise infra:deploy --build && sleep 5
 
 # vérifier les data
-mise app:docker:showdata
+mise infra:showdata
 
 # Créer des données de démo
-mise app:docker:bootstrap
+mise infra:bootstrap
 
 # vérifier les data
-mise app:docker:showdata
+mise infra:showdata
 
 # Arrêter et détruire l'application Docker
-mise app:docker:destroy [--flush] [--rmi]
+mise infra:destroy [--flush] [--rmi]
 ```
 
 L'application sera accessible sur :  
@@ -168,10 +168,10 @@ mise tasks
 mise <nom-de-la-tache>
 
 # Exemple : démarrer le backend en mode dev
-mise app:dev:start
+mise dev:app:start
 
 # Exemple : déployer en mode Docker
-mise app:docker:deploy --build
+mise infra:deploy --build
 ```
 
 ### Application complète
@@ -186,23 +186,23 @@ mise app:docker:deploy --build
 
 | Commande | Description |
 |----------|-------------|
-| `mise app:dev:start` | Démarre l'application complète en mode dev (backend + frontend) |
-| `mise app:dev:stop` | Arrête l'application complète |
-| `mise app:dev:restart` | Redémarre l'application complète |
-| `mise app:dev:bootstrap` | Crée des données de démonstration (utilisateurs + fichiers) |
-| `mise app:dev:health` | Vérifie l'état de santé de l'application en cours d'exécution |
-| `mise app:dev:showdata` | Affiche le contenu de la base de données et du storage |
-| `mise app:dev:reset` | Arrête l'application et efface toutes les données (database + storage) |
+| `mise dev:app:start` | Démarre l'application complète en mode dev (backend + frontend) |
+| `mise dev:app:stop` | Arrête l'application complète |
+| `mise dev:app:restart` | Redémarre l'application complète |
+| `mise dev:app:bootstrap` | Crée des données de démonstration (utilisateurs + fichiers) |
+| `mise dev:app:health` | Vérifie l'état de santé de l'application en cours d'exécution |
+| `mise dev:app:showdata` | Affiche le contenu de la base de données et du storage |
+| `mise dev:app:reset` | Arrête l'application et efface toutes les données (database + storage) |
 
 #### Mode Docker (Production)
 
 | Commande | Description |
 |----------|-------------|
-| `mise app:docker:deploy` | Déploie l'application avec Docker (build images + start containers) |
-| `mise app:docker:deploy --build` | Déploie avec rebuild des images Docker |
-| `mise app:docker:destroy` | Détruit l'application Docker (stop + remove containers) |
-| `mise app:docker:bootstrap` | Crée des données de démonstration dans Docker |
-| `mise app:docker:showdata` | Affiche le contenu de la base de données et du storage Docker |
+| `mise infra:deploy` | Déploie l'application avec Docker (build images + start containers) |
+| `mise infra:deploy --build` | Déploie avec rebuild des images Docker |
+| `mise infra:destroy` | Détruit l'application Docker (stop + remove containers) |
+| `mise infra:bootstrap` | Crée des données de démonstration dans Docker |
+| `mise infra:showdata` | Affiche le contenu de la base de données et du storage Docker |
 
 ### Documentation
 
@@ -216,41 +216,41 @@ mise app:docker:deploy --build
 
 | Commande | Description |
 |----------|-------------|
-| `mise backend:build` | Compile le projet backend avec Maven |
-| `mise backend:start` | Démarre l'application Spring Boot (port 3000) |
-| `mise backend:stop` | Arrête l'application Spring Boot |
-| `mise backend:restart` | Redémarre l'application Spring Boot |
-| `mise backend:tests:all` | Lance les tests unitaires et d'intégration |
-| `mise backend:tests:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
-| `mise backend:log` | Affiche les logs du backend en temps réel |
+| `mise dev:backend:build` | Compile le projet backend avec Maven |
+| `mise dev:backend:start` | Démarre l'application Spring Boot (port 3000) |
+| `mise dev:backend:stop` | Arrête l'application Spring Boot |
+| `mise dev:backend:restart` | Redémarre l'application Spring Boot |
+| `mise dev:backend:tests:all` | Lance les tests unitaires et d'intégration |
+| `mise dev:backend:tests:coverage` | Génère le rapport de couverture des tests (JaCoCo) |
+| `mise dev:backend:log` | Affiche les logs du backend en temps réel |
 
 ### Frontend
 
 | Commande | Description |
 |----------|-------------|
-| `mise frontend:build` | Build l'application frontend pour la production |
-| `mise frontend:start` | Démarre le serveur de développement Angular (port 4200) |
-| `mise frontend:stop` | Arrête le serveur de développement |
-| `mise frontend:restart` | Redémarre le serveur de développement |
-| `mise frontend:log` | Affiche les logs du frontend en temps réel |
-| `mise frontend:tests:all` | Exécute tous les tests frontend (single run) |
-| `mise frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
-| `mise frontend:tests:e2e` | Exécute les tests e2e Playwright |
+| `mise dev:frontend:build` | Build l'application frontend pour la production |
+| `mise dev:frontend:start` | Démarre le serveur de développement Angular (port 4200) |
+| `mise dev:frontend:stop` | Arrête le serveur de développement |
+| `mise dev:frontend:restart` | Redémarre le serveur de développement |
+| `mise dev:frontend:log` | Affiche les logs du frontend en temps réel |
+| `mise dev:frontend:tests:all` | Exécute tous les tests frontend (single run) |
+| `mise dev:frontend:tests:coverage` | Génère le rapport de couverture des tests frontend |
+| `mise dev:frontend:tests:e2e` | Exécute les tests e2e Playwright |
 
 ### Base de données
 
 | Commande | Description |
 |----------|-------------|
-| `mise db:show` | Affiche le contenu des tables de la base de données |
-| `mise db:flush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
-| `mise db:seed` | Crée un utilisateur de test pour les tests E2E |
+| `mise dev:dbshow` | Affiche le contenu des tables de la base de données |
+| `mise dev:dbflush` | Supprime tous les conteneurs et volumes de la base de données PostgreSQL |
+| `mise dev:dbseed` | Crée un utilisateur de test pour les tests E2E |
 
 ### Storage
 
 | Commande | Description |
 |----------|-------------|
-| `mise storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
-| `mise storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
+| `mise dev:storage:show` | Affiche l'arborescence complète du répertoire de stockage `/var/datashare/storage` |
+| `mise dev:storage:flush` | Supprime tous les fichiers du répertoire de stockage (destructif) |
 
 ---
 

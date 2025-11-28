@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#MISE description="Destroy datashare application (stop containers)"
+#MISE arg "--flush" help="Also delete all datas (volumes)"
+#MISE arg "--rmi" help="Also delete all images"
+
+set -e
+cd ${MISE_CONFIG_ROOT} || exit 1
+
+# check if --rmi flag is provided
+ARGS=""
+if [[ "$1" == "--rmi" ]] || [[ "$2" == "--rmi" ]]; then
+    ARGS="--rmi all"
+fi
+
+# Check if --flush flag is provided
+FLUSH_=false
+if [[ "$1" == "--flush" ]] || [[ "$2" == "--flush" ]]; then
+    FLUSH_=true
+fi
+
+if [ "$FLUSH_" = true ]; then
+    echo "⚠️  This will delete ALL database data AND all storage files!"
+    read -p "Are you sure? (yes/no): " confirmation
+    if [ "$confirmation" != "yes" ]; then
+        echo "❌ Operation cancelled"
+        exit 0
+    fi
+    ARGS="--volumes $ARGS"
+fi
+
+
+echo "🛑 Stopping DataShare application..."
+docker compose down $ARGS
+echo "✅ DataShare application stopped successfully!"

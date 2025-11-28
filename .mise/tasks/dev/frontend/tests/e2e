@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+#MISE description="Seed database and run E2E tests"
+set -e
+
+PIDFILE="${MISE_CONFIG_ROOT}/.backend.pid"
+
+# Vérifier si le backend est déjà lancé
+if [ -f "$PIDFILE" ]; then
+    PID=$(cat "$PIDFILE")
+    if ps -p "$PID" > /dev/null 2>&1; then
+        echo "✅ Backend is running (PID: $PID)"
+    fi
+else
+    echo "Startinfg backend for E2E tests..."
+    mise dev:backend:start
+    # Attendre un peu pour s'assurer que le backend est bien lancé
+    sleep 5
+fi
+
+
+echo "🚀 Préparation et exécution des tests E2E..."
+echo "================================================================"
+echo ""
+
+# 1. Seed des données de test
+echo "📦 Étape 1/2: Seed des données de test"
+mise run dev:app:bootstrap
+
+echo ""
+echo "================================================================"
+echo ""
+
+# 2. Exécution des tests E2E
+echo "🎭 Étape 2/2: Exécution des tests E2E"
+cd ${MISE_CONFIG_ROOT}/frontend || exit 1
+npm run e2e
+
+echo ""
+echo "================================================================"
+echo "✅ Pipeline de tests E2E terminé avec succès!"

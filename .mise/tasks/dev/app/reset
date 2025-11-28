@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#MISE description="Reset application and all data (database + storage)"
+#MISE arg "--restart" help="restart app after reset" default="false"
+
+set -e
+
+echo "=========================================="
+echo "⚠️  WARNING: Application Reset"
+echo "=========================================="
+echo ""
+echo "This will:"
+echo "  - Stop all services (backend + frontend)"
+echo "  - Delete all database data"
+echo "  - Delete all uploaded files"
+echo ""
+read -p "Are you sure? (yes/no): " confirmation
+
+if [ "$confirmation" != "yes" ]; then
+    echo "❌ Reset cancelled"
+    exit 0
+fi
+
+# Check if --storage flag is provided
+RESTART=false
+if [[ "$1" == "--restart" ]] || [[ "$2" == "--restart" ]]; then
+    RESTART=true
+fi
+
+echo ""
+echo "=========================================="
+echo "🔄 Resetting Application"
+echo "=========================================="
+echo ""
+
+# Stop application
+echo "🛑 Stopping application..."
+mise run app:dev:stop 2>/dev/null || echo "   Services already stopped"
+echo ""
+
+# Flush database and storage
+echo "🗑️  Flushing database and storage..."
+mise run dev:db:flush --storage
+echo ""
+# Restart application if requested
+if [ "$RESTART" = true ]; then
+    echo "🔄 Restarting application..."
+    mise run app:dev:start
+    echo ""
+else
+    echo "=========================================="
+    echo "✅ Application reset completed!"
+    echo "=========================================="
+    echo ""
+    echo "📋 Next steps:"
+    echo "   mise run app:dev:start              - Start application"
+    echo "   mise run app:dev:bootstrap     - Create test data"
+    echo ""
+fi
+
+
+
+
+
+
+
+
