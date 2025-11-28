@@ -11,8 +11,9 @@ nav:
   - API : 'api.md'
   - Tests: 'tests.md'
   - Sécurité: 'SECURITY.md'
-  - Troubleshoot: 'troubleshoot.md'
   - Performances: 'PERF.md'
+  - Troubleshoot: 'troubleshoot.md'
+  - Maintenance: 'MAINTENANCE.md'
 
 # Configuration
 theme:
