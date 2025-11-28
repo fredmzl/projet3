@@ -5,12 +5,11 @@ set -e
 
 # Stop application
 echo "🛑 Stopping application..."
-mise run app:stop 2>/dev/null || echo "   Services already stopped"
+mise run app:dev:stop 2>/dev/null || echo "   Services already stopped"
 echo ""
 
 echo "🔄 Restarting application..."
-mise run app:start
-
+mise run app:dev:start
 
 
 

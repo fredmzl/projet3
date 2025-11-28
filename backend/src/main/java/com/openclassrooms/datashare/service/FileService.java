@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,6 +54,11 @@ public class FileService {
 
     @Value("${app.download.base-url}")
     private String downloadBaseUrl;
+
+    @PostConstruct
+    public void init() {
+        log.info("FileService initialized with downloadBaseUrl: {}", downloadBaseUrl);
+    }
 
     /**
      * Upload un fichier avec ses métadonnées.

@@ -25,7 +25,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-datashare}
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-db_user}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-db_password}
-      DOWNLOAD_BASE_URL: ${DOWNLOAD_BASE_URL:-https://www.datashare.projet3.oc/api/download}
+      DOWNLOAD_BASE_URL: ${DOWNLOAD_BASE_URL:-https://www.datashare.projet3.oc/download}
     volumes:
       - datashare-storage:/var/datashare/storage
     networks:

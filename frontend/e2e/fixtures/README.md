@@ -119,7 +119,7 @@ npx playwright test e2e/us01-file-download.spec.ts
 - **Playwright Request Context** : Pour faire des appels HTTP avant les tests
 - **API Backend** : Doit être accessible sur http://localhost:3000
 - **Compte Alice** : `alice@example.com` / `password`
-- **Fichiers de démo** : Créés par `mise app:bootstrap`
+- **Fichiers de démo** : Créés par `mise app:dev:bootstrap`
 
 ## Extension possible
 

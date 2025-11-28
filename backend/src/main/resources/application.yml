@@ -18,6 +18,14 @@ jwt:
   secret: ${JWT_SECRET:bGliZXJ0eVN0dWRlbnRCaWJsaW90aGVxdWVTZWNyZXRLZXlGb3JKV1RUb2tlbkdlbmVyYXRpb24=}
   expiration-ms: ${JWT_EXPIRATION:86400000} # 24 heures en millisecondes
 
+app:
+  storage:
+    path: ${STORAGE_PATH:/var/datashare/storage}
+  file:
+    max-size: ${MAX_FILE_SIZE:1073741824}
+  download:
+    base-url: ${DOWNLOAD_BASE_URL:http://localhost:4200/download}
+
 logging:
   level:
     org:

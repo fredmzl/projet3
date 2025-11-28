@@ -118,4 +118,12 @@ export class FileService {
   deleteFile(fileId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${fileId}`);
   }
+
+  downloadFile(token: string, password?: string): Observable<Blob> {
+    const body = password ? { password } : {};
+    
+    return this.http.post(`${environment.apiUrl}/download/${token}`, body, {
+      responseType: 'blob'
+    });
+  }
 }

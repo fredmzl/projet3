@@ -47,7 +47,7 @@ export const test = base.extend<{ downloadTokens: DownloadTokens }>({
     console.log(`✅ Retrieved ${files.length} files from API`);
 
     if (!Array.isArray(files) || files.length === 0) {
-      throw new Error('No files found. Please run: mise app:bootstrap');
+      throw new Error('No files found. Please run: mise app:dev:bootstrap');
     }
 
     // 3. Extraire les tokens selon le nom de fichier (utiliser 'filename' pas 'originalFilename')
@@ -56,7 +56,7 @@ export const test = base.extend<{ downloadTokens: DownloadTokens }>({
     const oldFile = files.find((f: any) => f.filename === 'old-document.txt');
 
     if (!reportFile || !secretFile || !oldFile) {
-      throw new Error('Demo files not found. Please run: mise app:bootstrap');
+      throw new Error('Demo files not found. Please run: mise app:dev:bootstrap');
     }
 
     const tokens: DownloadTokens = {

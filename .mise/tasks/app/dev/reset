@@ -34,7 +34,7 @@ echo ""
 
 # Stop application
 echo "🛑 Stopping application..."
-mise run app:stop 2>/dev/null || echo "   Services already stopped"
+mise run app:dev:stop 2>/dev/null || echo "   Services already stopped"
 echo ""
 
 # Flush database and storage
@@ -44,7 +44,7 @@ echo ""
 # Restart application if requested
 if [ "$RESTART" = true ]; then
     echo "🔄 Restarting application..."
-    mise run app:start
+    mise run app:dev:start
     echo ""
 else
     echo "=========================================="
@@ -52,8 +52,8 @@ else
     echo "=========================================="
     echo ""
     echo "📋 Next steps:"
-    echo "   mise run app:start              - Start application"
-    echo "   mise run db:bootstrap     - Create test data"
+    echo "   mise run app:dev:start              - Start application"
+    echo "   mise run app:dev:bootstrap     - Create test data"
     echo ""
 fi
 

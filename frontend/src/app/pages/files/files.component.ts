@@ -144,10 +144,50 @@ export class FilesComponent implements OnInit {
   }
 
   /**
-   * Ouvre le lien de téléchargement dans un nouvel onglet
+   * Télécharge un fichier via une requête POST sans ouvrir d'onglet
    */
   onDownloadFile(file: FileMetadata): void {
-    window.open(file.downloadUrl, '_blank');
+    // Extraire le token depuis l'URL de téléchargement
+    const token = file.downloadUrl.split('/').pop()!;
+    
+    // Si le fichier est protégé, demander le mot de passe
+    this.performDownload(token, file.filename);
+  }
+
+  /**
+   * Effectue le téléchargement du fichier
+   */
+  private performDownload(token: string, filename: string, password?: string): void {
+    this.fileService.downloadFile(token, password).subscribe({
+      next: (blob) => {
+        // Créer un lien temporaire pour déclencher le téléchargement
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement:', err);
+        let errorMessage = 'Erreur lors du téléchargement du fichier';
+        
+        if (err.status === 404) {
+          errorMessage = 'Fichier non trouvé ou expiré';
+        } else if (err.status === 403) {
+          errorMessage = 'Mot de passe incorrect';
+        } else if (err.status === 401) {
+          errorMessage = 'Vous devez vous reconnecter';
+          this.authService.logout();
+        }
+        
+        this.snackBar.open(errorMessage, 'Fermer', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
+        });
+      }
+    });
   }
 
   /**

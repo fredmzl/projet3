@@ -38,19 +38,19 @@ mise prepare
 mise doc:start
 
 # Démarrer l'application complète (backend + frontend)
-mise app:start && sleep 5
+mise app:dev:start && sleep 5
 
 # vérifier l'état de l'application
-mise app:health
+mise app:dev:health
 
 # vérifier les data
-mise app:showdata
+mise app:dev:showdata
 
 # Créer des données de démo
-mise app:bootstrap
+mise app:dev:bootstrap
 
 # vérifier les data
-mise app:showdata
+mise app:dev:showdata
 ```
 
 L'application sera accessible sur :  
