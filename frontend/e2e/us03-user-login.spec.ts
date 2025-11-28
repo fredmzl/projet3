@@ -122,17 +122,17 @@ test.describe('US03 - Connexion utilisateur', () => {
     await expect(submitButton).toBeDisabled();
   });
 
-  test('devrait valider la longueur minimale du mot de passe (6 caractères)', async ({ page }) => {
+  test('devrait valider la longueur minimale du mot de passe (8 caractères)', async ({ page }) => {
     // Saisir un mot de passe trop court
     await page.fill('input[type="email"]', 'test@example.com');
     await page.fill('input[type="password"]', '12345'); // 5 caractères
 
-    // Le bouton devrait être désactivé (validation minLength(6) sur le formulaire)
+    // Le bouton devrait être désactivé (validation minLength(8) sur le formulaire)
     const submitButton = page.getByRole('button', { name: /Connexion/i });
     await expect(submitButton).toBeDisabled();
     
     // Saisir un mot de passe valide
-    await page.fill('input[type="password"]', '123456'); // 6 caractères
+    await page.fill('input[type="password"]', '12345678'); // 8 caractères
     
     // Le bouton devrait être activé
     await expect(submitButton).not.toBeDisabled();

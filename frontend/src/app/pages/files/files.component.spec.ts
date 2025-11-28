@@ -57,8 +57,9 @@ describe('FilesComponent', () => {
       currentUser: signal(mockUser)
     });
     
-    const fileSpy = jasmine.createSpyObj('FileService', ['getFiles', 'deleteFile']);
+    const fileSpy = jasmine.createSpyObj('FileService', ['getFiles', 'deleteFile', 'downloadFile']);
     fileSpy.getFiles.and.returnValue(of({ files: [], totalElements: 0, totalPages: 0, currentPage: 0, pageSize: 10 }));
+    fileSpy.downloadFile.and.returnValue(of(new Blob(['test'], { type: 'application/pdf' })));
 
     const snackSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
     const dialogSpyObj = jasmine.createSpyObj('MatDialog', ['open']);
@@ -222,12 +223,14 @@ describe('FilesComponent', () => {
     });
 
     it('should handle error when loading files fails', () => {
+      spyOn(console, 'error'); // Empêche le log d'erreur d'apparaître
       fileServiceSpy.getFiles.and.returnValue(throwError(() => new Error('Network error')));
 
       component.loadFiles();
 
       expect(component.error()).toBe('Impossible de charger la liste des fichiers');
       expect(component.isLoading()).toBe(false);
+      expect(console.error).toHaveBeenCalledWith('Erreur lors du chargement des fichiers:', jasmine.any(Error));
     });
 
     it('should set loading state during file loading', () => {
@@ -272,12 +275,21 @@ describe('FilesComponent', () => {
   });
 
   describe('File Download', () => {
-    it('should open download URL in new tab', () => {
-      spyOn(window, 'open');
+    it('should download file using blob and create download link', () => {
+      const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.returnValue('blob:mock-url');
+      const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL');
+      const createElementSpy = spyOn(document, 'createElement').and.returnValue({
+        click: jasmine.createSpy('click'),
+        href: '',
+        download: ''
+      } as any);
 
       component.onDownloadFile(mockFile);
 
-      expect(window.open).toHaveBeenCalledWith(mockFile.downloadUrl, '_blank');
+      expect(fileServiceSpy.downloadFile).toHaveBeenCalledWith('token123', undefined);
+      expect(createObjectURLSpy).toHaveBeenCalledWith(jasmine.any(Blob));
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
     });
   });
 

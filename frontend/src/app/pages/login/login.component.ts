@@ -31,7 +31,7 @@ export class LoginComponent {
   // Formulaire de connexion
   loginForm = this.fb.nonNullable.group({
     login: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(8)]]
   });
 
   /**

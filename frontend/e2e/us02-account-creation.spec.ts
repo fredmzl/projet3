@@ -81,7 +81,7 @@ test.describe('US02 - Création de compte', () => {
     await page.locator('input#password').blur();
 
     // Vérifier le message d'erreur
-    await expect(page.locator('.error-message').filter({ hasText: /au moins 6 caractères/i })).toBeVisible();
+    await expect(page.locator('.error-message').filter({ hasText: /au moins 8 caractères/i })).toBeVisible();
 
     // Le bouton devrait être désactivé
     const submitButton = page.getByRole('button', { name: /Créer mon compte/i });

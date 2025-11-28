@@ -22,9 +22,9 @@ echo "🚀 Préparation et exécution des tests E2E..."
 echo "================================================================"
 echo ""
 
-# 1. Seed de la base de données
-echo "📦 Étape 1/2: Seed de la base de données"
-mise run db:seed
+# 1. Seed des données de test
+echo "📦 Étape 1/2: Seed des données de test"
+mise run app:dev:bootstrap
 
 echo ""
 echo "================================================================"

@@ -47,7 +47,7 @@ export class RegisterComponent {
   // Formulaire réactif avec confirmation de mot de passe
   registerForm = this.formBuilder.nonNullable.group({
     login: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
     confirmPassword: ['', [Validators.required]]
   }, { validators: passwordMatchValidator });
 

@@ -87,13 +87,13 @@ describe('RegisterComponent', () => {
       expect(password?.hasError('required')).toBe(true);
     });
 
-    it('should require password minimum length of 6 characters', () => {
+    it('should require password minimum length of 8 characters', () => {
       const password = component.registerForm.get('password');
       
-      password?.setValue('12345');
+      password?.setValue('1234567');
       expect(password?.hasError('minlength')).toBe(true);
       
-      password?.setValue('123456');
+      password?.setValue('12345678');
       expect(password?.hasError('minlength')).toBe(false);
     });
 
