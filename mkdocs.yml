@@ -10,8 +10,9 @@ nav:
   - Parcours utilisateur: 'us/user-journey.md'
   - API : 'api.md'
   - Tests: 'tests.md'
-  - Sécurité: 'secu.md'
+  - Sécurité: 'SECURITY.md'
   - Troubleshoot: 'troubleshoot.md'
+  - Performances: 'PERF.md'
 
 # Configuration
 theme:

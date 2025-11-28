@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="build backend"
-
-mvn clean compile -f ${MISE_CONFIG_ROOT}/backend/pom.xml && echo "✅ backend compiled successfully!" || echo "❌ backend compilation failed!"

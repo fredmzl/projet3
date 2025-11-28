@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Run backend tests"
-
-mvn clean test -f ${MISE_CONFIG_ROOT}/backend/pom.xml && echo "✅ all tests passed!" || echo "❌ some tests failed!"
