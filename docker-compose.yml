@@ -6,12 +6,18 @@ services:
       POSTGRES_USER: ${DB_USER:-db_user}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-db_password}
       POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+    restart: unless-stopped
     networks:
       - datashare-net
     ports:
       - ${DB_PORT:-5432}
     volumes:
       - datashare-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     image: datashare-backend:latest
@@ -20,6 +26,7 @@ services:
     build:
       context: .
       dockerfile: ./backend/docker/Dockerfile
+    restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-datashare}
@@ -31,25 +38,29 @@ services:
     networks:
       - datashare-net
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   frontend:
     image: datashare-frontend:latest
     ports:
     - "4200"
+    restart: unless-stopped
     build:
       context: .
       dockerfile: ./frontend/docker/Dockerfile
     networks:
       - datashare-net
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
   rproxy:
     image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
+    restart: unless-stopped
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/sites-enabled:/etc/nginx/sites-enabled:ro
@@ -61,7 +72,10 @@ services:
       - datashare-net
       - default
     depends_on:
-      - frontend
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
 
 volumes:
   datashare-db:

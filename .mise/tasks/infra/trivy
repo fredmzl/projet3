@@ -1,0 +1,57 @@
+#!/bin/bash
+#MISE description="scan infra CVE with Trivy"
+
+echo "Check prerequisites"
+POSTGRES_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep postgres | head -n 1)
+NGINX_IMAGE=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep nginx | head -n 1)
+DATASHARE_IMAGES=$(docker images --format "{{.Repository}}:{{.Tag}}" | grep datashare)
+
+if [ -z "$DATASHARE_IMAGES" ]; then
+    echo "❌ No datashare images found locally. Please build or pull datashare images first."
+    exit 1
+fi
+
+if [ -z "$POSTGRES_IMAGE" ]; then
+    echo "❌ No Postgres image found locally. Please pull a Postgres image first."
+    exit 1
+fi
+
+if [ -z "$NGINX_IMAGE" ]; then
+    echo "❌ No Nginx image found locally. Please pull an Nginx image first."
+    exit 1
+fi
+
+if ! command -v trivy &> /dev/null
+then
+    echo "❌ Trivy could not be found. Please install Trivy first."
+    echo "Visit https://trivy.dev/docs/latest/getting-started/installation/#debianubuntu-official"
+    exit 1
+fi
+
+echo "🔍 Scanning datashare images for vulnerabilities with Trivy..."
+
+for image in $DATASHARE_IMAGES; do
+    echo "============================================================================"
+    echo "Scanning image: $image"
+    trivy image --severity HIGH,CRITICAL "$image" || { echo "❌ CVE scan failed for image $image!"; exit 1; }
+    echo "============================================================================"
+    echo ""
+    echo ""
+done
+
+echo "🔍 Scanning Postgres image for vulnerabilities with Trivy..."
+echo "============================================================================"
+echo "Scanning image: $POSTGRES_IMAGE"
+trivy image --severity HIGH,CRITICAL "$POSTGRES_IMAGE" || { echo "❌ CVE scan failed for image $POSTGRES_IMAGE!"; exit 1; }
+echo "============================================================================"
+echo ""
+echo ""
+
+echo "🔍 Scanning Nginx image for vulnerabilities with Trivy..."
+echo "============================================================================"
+echo "Scanning image: $NGINX_IMAGE"
+trivy image --severity HIGH,CRITICAL "$NGINX_IMAGE" || { echo "❌ CVE scan failed for image $NGINX_IMAGE!"; exit 1; }
+echo "============================================================================"
+echo ""
+echo ""
+echo "✅ Infra CVE scan completed successfully!"

@@ -41,8 +41,11 @@ COPY frontend/docker/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=nginx:nginx --from=builder /build/dist/*/browser /usr/share/nginx/html
 
 # Expose port 4200 to allow HTTP traffic
-# Note: The default NGINX container now listens on port 4200 instead of 80 
 EXPOSE 4200
+
+# Healthcheck Nginx
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:4200/ || exit 1
 
 # Start Nginx directly with custom config
 ENTRYPOINT ["nginx", "-c", "/etc/nginx/nginx.conf"]

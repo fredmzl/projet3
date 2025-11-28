@@ -272,6 +272,13 @@ La sécurité de DataShare repose sur plusieurs couches de protection complémen
 !!! warning "Section en cours de rédaction"
     Cette section sera complétée avec les détails sur :
 
+### Scans de sécurité
+- Fréquence des scans : hebdomadaire via CI/CD et avant chaque release
+- Outils utilisés : OWASP Dependency-Check (backend), npm audit (frontend)
+
+!!! info "Scan de cve du projet datashare"
+    Pour plus de détails, consultez la documentation dédiée : [Description détaillée des scans de sécurité](./secu.md)  
+
 **Documentation à inclure :**
 
 - **[TESTING.md](./TESTING.md)** : Plan de tests, critères d'acceptation, instructions d'exécution

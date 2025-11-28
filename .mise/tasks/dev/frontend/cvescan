@@ -1,0 +1,14 @@
+#!/bin/bash
+#MISE description="scan frontend CVE with npm audit"
+#MISE arg "--fix" help="Apply fixes automatically" default="false"
+
+cd ${MISE_CONFIG_ROOT}/frontend
+
+if [[ "$1" == "--fix" ]] || [[ "$2" == "--fix" ]]; then
+    ARGS=
+else
+    ARGS=--dry-run
+fi
+
+npm audit fix $ARGS || { echo "❌ frontend CVE scan failed!"; exit 1; }
+echo "✅ frontend CVE scan completed successfully!"

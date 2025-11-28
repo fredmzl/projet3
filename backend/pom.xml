@@ -33,6 +33,11 @@
 		<testcontainers.version>2.0.2</testcontainers.version>
 	</properties>
 	<dependencies>
+	    <dependency>
+			<groupId>org.owasp</groupId>
+			<artifactId>dependency-check-maven</artifactId>
+			<version>12.1.9</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -149,6 +154,18 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<!-- Fix CVE-2021-26291 : Force maven-core 3.9.9 (latest stable) -->
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<version>3.9.9</version>
+			</dependency>
+			<!-- Fix CVE-2023-2976 : Force guava > 32.0.0 -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>32.1.2-jre</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -256,6 +273,41 @@
 								<exclude>**/DatashareBackendApplication.class</exclude>
 							</excludes>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- OWASP Dependency-Check -->
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>12.1.9</version>
+				<configuration>
+					<!-- Clé API NVD (optionnel mais recommandé pour éviter les limitations de requêtes) -->
+					<nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+					<!-- Format des rapports -->
+					<formats>
+						<format>HTML</format>
+						<format>JSON</format>
+					</formats>
+					
+					<!-- Dossier de sortie -->
+					<outputDirectory>${project.build.directory}/dependency-check</outputDirectory>
+					
+					<!-- Sévérité minimale pour échouer le build (optionnel) -->
+					<failBuildOnCVSS>7</failBuildOnCVSS>
+					
+					<!-- Exclure certaines dépendances de test (optionnel) -->
+					<skipTestScope>false</skipTestScope>
+					
+					<!-- Analyser aussi les dépendances transitives -->
+					<skipProvidedScope>false</skipProvidedScope>
+					<skipRuntimeScope>false</skipRuntimeScope>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

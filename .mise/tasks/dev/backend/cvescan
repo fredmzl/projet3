@@ -1,0 +1,12 @@
+#!/bin/bash
+#MISE description="scan backend CVE with OWASP Dependency-Check"
+
+cd ${MISE_CONFIG_ROOT}/backend
+
+if [[ -f ".env.secrets" ]]; then
+    echo "ℹ️ loading NVD API key."
+    source .env.secrets
+fi
+
+mvn dependency-check:check || { echo "❌ Backend CVE scan failed!"; exit 1; }
+echo "✅ Backend CVE scan completed successfully!"

@@ -10,6 +10,7 @@ nav:
   - Parcours utilisateur: 'us/user-journey.md'
   - API : 'api.md'
   - Tests: 'tests.md'
+  - Sécurité: 'secu.md'
   - Troubleshoot: 'troubleshoot.md'
 
 # Configuration
