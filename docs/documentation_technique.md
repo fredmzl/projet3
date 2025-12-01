@@ -269,50 +269,34 @@ La sécurité de DataShare repose sur plusieurs couches de protection complémen
 
 ## ✅ Qualité, Tests et Maintenance
 
-!!! warning "Section en cours de rédaction"
-    Cette section sera complétée avec les détails sur :
+!!! info "Se référer aux documents dédiés pour les aspects qualité, tests et maintenance :"
 
-### Scans de sécurité
-- Fréquence des scans : hebdomadaire via CI/CD et avant chaque release
-- Outils utilisés : OWASP Dependency-Check (backend), npm audit (frontend)
-
-!!! info "Scan de cve du projet datashare"
-    Pour plus de détails, consultez la documentation dédiée : [Description détaillée des scans de sécurité](./secu.md)  
-
-**Documentation à inclure :**
-
-- **[TESTING.md](./TESTING.md)** : Plan de tests, critères d'acceptation, instructions d'exécution
-- **[SECURITY.md](./SECURITY.md)** : Résultats du scan de sécurité + analyse des décisions
-- **[PERF.md](./PERF.md)** : Test de performance d'un endpoint, résultats + interprétation
-- **[MAINTENANCE.md](./MAINTENANCE.md)** : Procédures de mise à jour, fréquence, risques
-- **Captures** : Logs ou métriques de performance (navigateur, serveur)
+    - **[TESTING.md](./TESTING.md)** : Plan de tests, critères d'acceptation, instructions d'exécution
+    - **[SECURITY.md](./SECURITY.md)** : Résultats du scan de sécurité + analyse des décisions
+    - **[PERF.md](./PERF.md)** : Test de performance d'un endpoint, résultats + interprétation
+    - **[MAINTENANCE.md](./MAINTENANCE.md)** : Procédures de mise à jour, fréquence, risques
 
 ---
 
 ## 🚀 Installation et Exécution
 
-!!! info "Prérequis"
+!!! info "Se référer aux documents dédiés pour les aspects installation et exécution :"
     Consultez la section [Getting started](./index.md#"Quick start") pour les instructions détaillées.
 
-!!! warning "Section en cours de rédaction"
-    Cette section fournira un guide complet pour installer et exécuter l'application DataShare.
 
 ---
 
 ## 🤖 Utilisation de l'IA dans le Développement
 
-!!! warning "Section en cours de rédaction"
-    Cette section détaillera :
+Je me suis positionné en tant que **Scrum Master** et **Lead technique** supervisant un développeur junior.
 
 ### Posture adoptée
-- Assignation de tâches à l'IA (comme à un développeur junior)
-- Binômage / Vibe coding
-- Combinaison des deux approches
+- l'humain conçoit l'architecture et les spécifications, l'IA assiste dans l'implémentation
 
 ### Tâches confiées à l'IA
 - Implémentation de fonctionnalités
 - Génération de tests unitaires et d'intégration
-- Rédaction de documentation
+- Mise en forme de la documentation
 - Refactoring de code
 
 ### Supervision et corrections

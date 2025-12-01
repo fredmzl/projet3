@@ -75,7 +75,7 @@ L'application **répond à tous les critères de performance** avec :
 ## 🏃‍♀️‍➡️ Commande pour Reproduire le Test
 
 ```bash
-mise perf:k6
+mise test:perf:load
 ```
 
 

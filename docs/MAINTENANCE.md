@@ -151,9 +151,9 @@ La maintenance des dépendances est essentielle pour garantir la sécurité, la 
 1. **Scan de Sécurité** (10 min)
 
     ```bash
-    - mise dev:frontend:cvescan
-    - mise dev:backend:cvescan
-    - mise infra:trivy
+    - mise mise:security:scan:frontend
+    - mise mise:security:scan:backend
+    - mise security:scan:trivy
     - Génération rapport CVE
     ```
 
@@ -168,7 +168,7 @@ La maintenance des dépendances est essentielle pour garantir la sécurité, la 
 3. **Tests de Performance** (8 min)
 
     ```bash
-    - mise perf:k6
+    - mise test:perf:load
     - Comparaison avec baseline
     - Alertes si dégradation > 10%
     ```

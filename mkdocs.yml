@@ -1,13 +1,14 @@
 site_name: OC - expert DevOps - Projet 3
-repo_url: https://gitlab.home.lan/formation/oc-projet3
+repo_url: https://github.com/fredmzl/projet3
+edit_uri: ./edit/main/docs
 site_url: ''
 site_description: Documentation du projet Pilotez le développement d'une solution informatique
 site_author: Frédéric Mazzarol
 
 nav:
   - Accueil: 'index.md'
-  - Documentation technique: 'documentation_technique.md'
   - Parcours utilisateur: 'us/user-journey.md'
+  - Documentation technique: 'documentation_technique.md'
   - API : 'api.md'
   - Tests: 'tests.md'
   - Sécurité: 'SECURITY.md'
@@ -115,5 +116,5 @@ plugins:
   - search
   - neoteroi.mkdocsoad:
       use_pymdownx: true
-  - print-site
+  - offline
 
