@@ -24,7 +24,7 @@ done
 
 mkdir -p ${MISE_CONFIG_ROOT}/logs
 
-if [! -f ${MISE_CONFIG_ROOT}/backend/.env ]; then
+if [ ! -f ${MISE_CONFIG_ROOT}/backend/.env ]; then
     echo "Creating default .env file for backend..."
     cat << EOF > ${MISE_CONFIG_ROOT}/backend/.env
 PG_VERSION=16.1-alpine

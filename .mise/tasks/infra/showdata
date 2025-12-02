@@ -17,7 +17,7 @@ echo "📝 Files table:"
 docker compose exec postgres psql -U db_user -d datashare -c "SELECT * FROM files;"
 echo ""
 echo ""
-echo " Files stored on the server:"
+echo "📁 Files stored on the server:"
 docker compose exec backend ls -laR /var/datashare/storage
 echo ""
 echo "✅ Data display complete."
