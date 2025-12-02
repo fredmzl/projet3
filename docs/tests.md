@@ -40,7 +40,7 @@ Le rapport de couverture de code est généré automatiquement lors de l'exécut
 Pour générer le rapport de couverture :
 
 ```bash
-mise dev:backend:tests:coverage
+mise test:coverage:backend
 ```
 
 Le rapport sera disponible dans `backend/target/site/jacoco/index.html` et accessible via cette documentation.
@@ -52,10 +52,10 @@ Le rapport sera disponible dans `backend/target/site/jacoco/index.html` et acces
 
 ```bash
 # Tous les tests
-mise dev:backend:tests:all
+mise test:unit:backend
 
 # Tests avec rapport de couverture
-mise dev:backend:tests:coverage
+mise test:coverage:backend
 ```
 
 #### Seuil de couverture
@@ -77,7 +77,7 @@ Le rapport de couverture de code est généré automatiquement lors de l'exécut
 Pour générer le rapport de couverture :
 
 ```bash
-mise dev:frontend:tests:coverage
+mise test:coverage:frontend
 ```
 
 Le rapport sera disponible dans `frontend/coverage/frontend/index.html`.
@@ -88,10 +88,10 @@ Le rapport sera disponible dans `frontend/coverage/frontend/index.html`.
 
 ```bash
 # Tous les tests (single run)
-mise dev:frontend:tests:all
+mise test:unit:frontend
 
 # Tests avec rapport de couverture
-mise dev:frontend:tests:coverage
+mise test:coverage:frontend
 
 # Mode développement (watch)
 cd frontend && npm test

@@ -2,6 +2,14 @@
 
 Application de partage de fichiers sécurisé avec expiration automatique et protection par mot de passe.
 
+## plan de suivi de qualité et maintenance  
+
+Ce projet inclut un plan de suivi de qualité et maintenance détaillé dans les documents suivants :  
+- [TESTING.md](TESTING.md) : Stratégie et procédures de tests  
+- [SECURITY.md](SECURITY.md) : Pratiques de sécurité et scans de vulnérabilités  
+- [PERF.md](PERF.md) : Résultats des tests de performance  
+- [MAINTENANCE.md](MAINTENANCE.md)  
+
 ## 🚀 Quick Start
 
 ### 1. Prérequis

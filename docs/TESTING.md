@@ -432,7 +432,7 @@ cd frontend
 npx playwright install
 
 # Démarrage backend & chargement des données de test
-mise dev:backend:start && sleep 5 && mise dev:app:bootstrap
+mise dev:backend:start && sleep 5 && mise bootstrap
 
 # Exécution des tests E2E
 npm run e2e

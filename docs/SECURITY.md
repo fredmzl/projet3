@@ -9,7 +9,7 @@ Cette documentation décrit les pratiques et outils utilisés pour assurer la s�
 !!! info "Téléchargement base de données NVD"    
     Le téléchargement de la base de données NVD peut prendre **plusieurs minutes** lors du **premier scan**.     
     Si vous avez une **clef API NVD**, vous pouvez la configurer dans la variable d'environnement `NVD_API_KEY` pour éviter les limitations de requêtes.    
-    La tâche mise **`mise mise:security:scan:backend`** charge **automatiquement** cette variable d'environnement depuis le fichier **`backend/.env.secrets`**.  
+    La tâche mise **`mise security:scan:backend`** charge **automatiquement** cette variable d'environnement depuis le fichier **`backend/.env.secrets`**.  
 
 #### Commande exécutée
 ```bash
@@ -31,8 +31,8 @@ Voir le document détaillé : [Cas Pratique : Correction CVE-2021-26291 (maven-c
 #### Commande exécutée
 ```bash
 cd frontend
-mise mise:security:scan:frontend
-mise mise:security:scan:frontend --fix
+mise security:scan:frontend
+mise security:scan:frontend --fix
 ```
 #### Rapport généré
 Sans outil supplémentaire, le rapport est affiché dans la console.  

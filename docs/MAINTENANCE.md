@@ -151,8 +151,8 @@ La maintenance des dépendances est essentielle pour garantir la sécurité, la 
 1. **Scan de Sécurité** (10 min)
 
     ```bash
-    - mise mise:security:scan:frontend
-    - mise mise:security:scan:backend
+    - mise security:scan:frontend
+    - mise security:scan:backend
     - mise security:scan:trivy
     - Génération rapport CVE
     ```
@@ -160,9 +160,9 @@ La maintenance des dépendances est essentielle pour garantir la sécurité, la 
 2. **Tests Automatisés** (15 min)
 
     ```bash
-    - Backend : mise dev:backend:test:coverage (JUnit + Jacoco)
-    - Frontend : mise dev:frontend:tests:coverage (Karma/Jest)
-    - Tests E2E : mise dev:frontend:tests:e2e (Playwright)
+    - Backend : mise test:coverage:backend (JUnit + Jacoco)
+    - Frontend : mise test:coverage:frontend (Karma/Jest)
+    - Tests E2E : mise test:e2e (Playwright)
     ```
 
 3. **Tests de Performance** (8 min)
