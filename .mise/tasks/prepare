@@ -22,6 +22,32 @@ for cmd in "${prerequisites[@]}"; do
     fi
 done
 
+mkdir -p ${MISE_CONFIG_ROOT}/logs
+
+if [! -f ${MISE_CONFIG_ROOT}/backend/.env ]; then
+    echo "Creating default .env file for backend..."
+    cat << EOF > ${MISE_CONFIG_ROOT}/backend/.env
+PG_VERSION=16.1-alpine
+DB_USER=db_user
+DB_PASSWORD=oc2025-db_user!
+DB_HOST=postgresql
+DB_PORT=5432
+DB_NAME=datashare
+
+# CORS - Allow frontend access from any local network IP
+CORS_ALLOWED_ORIGINS=http://localhost:4200,http://127.0.0.1:4200,http://192.168.10.163:4200,http://frontend:4200
+
+# Download URL - Public URL pointing to frontend download page (US01)
+# This URL is shared with users to access the download page
+DOWNLOAD_BASE_URL=https://www.datashare.projet3.oc/download
+EOF
+    echo "✅ .env file for backend created!"
+else
+    echo ".env file for backend already exists. Skipping creation."
+    exit 0
+fi
+
+
 echo "Installing dependencies..."
 pip install --upgrade pip
 pip install -r requirements.txt

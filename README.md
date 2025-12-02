@@ -35,12 +35,13 @@ mise use -g usage # to enable auto-completion and help
 # Cloner le projet
 git clone <repository-url>
 cd oc-projet3
+mise trust
 
 # Installer les dépendances
 mise install
 
 # bootstraper le projet 
-mise prepare
+mise prepare (/!\ crée un .env dans backend/ avec les variables d'environnement par défaut)
 
 # Déployer la documentation (localhost:8000)
 mise doc:start
