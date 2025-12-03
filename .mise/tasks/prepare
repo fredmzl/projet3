@@ -72,6 +72,7 @@ if [ "${MISE_ARG_NO_PIP_UPGRADE}" == "true" ]; then
 fi
 pip install -r requirements.txt
 cd ${MISE_CONFIG_ROOT}/frontend && npm install > /dev/null
+cd ${MISE_CONFIG_ROOT}/frontend && npx playwright install > /dev/null
 echo "✓ npm packages installed!"
 cd ${MISE_CONFIG_ROOT}/backend && mvn dependency:copy-dependencies > /dev/null
 echo "✓ Maven dependencies copied!"

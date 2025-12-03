@@ -10,10 +10,19 @@ cd frontend
 # Exécution des tests avec génération de la couverture
 npm run test:coverage
 
-echo ""
-echo "================================================================"
-echo "✅ Rapport de couverture généré!"
-echo ""
-echo "📂 Emplacement: frontend/coverage/"
-echo "🌐 Ouvrir le rapport: firefox frontend/coverage/index.html"
-echo "   ou: xdg-open frontend/coverage/index.html"
+REPORT_PATH="${MISE_CONFIG_ROOT}/frontend/coverage/frontend/index.html"
+
+if [ -f "$REPORT_PATH" ]; then
+    mise run doc:restart 2>/dev/null || true
+    echo ""
+    echo "================================================================"
+    echo "✅ Rapport de couverture généré!"
+    echo ""
+    echo "🌐 Ouvrir le rapport: firefox ${REPORT_PATH}"
+    echo "   ou: xdg-open ${REPORT_PATH}"
+else
+    echo "❌ Failed to generate coverage report"
+    exit 1
+fi
+
+
