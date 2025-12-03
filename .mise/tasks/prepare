@@ -25,6 +25,23 @@ done
 
 mkdir -p ${MISE_CONFIG_ROOT}/logs
 
+# Create default backend-cve report file if it doesn't exist
+if [ ! -f ${MISE_CONFIG_ROOT}/backend/target/dependency-check/dependency-check-report.html ]; then
+    echo "Creating default backend-cve report file..."
+    mkdir -p ${MISE_CONFIG_ROOT}/backend/target/dependency-check
+    cat << EOF > ${MISE_CONFIG_ROOT}/backend/target/dependency-check/dependency-check-report.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend CVE Report</title>
+</head>     
+</html>
+EOF
+fi
+
+
 if [ ! -f ${MISE_CONFIG_ROOT}/backend/.env ]; then
     echo "Creating default .env file for backend..."
     cat << EOF > ${MISE_CONFIG_ROOT}/backend/.env
