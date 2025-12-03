@@ -15,6 +15,7 @@ nav:
   - Performances: 'PERF.md'
   - Troubleshoot: 'troubleshoot.md'
   - Maintenance: 'MAINTENANCE.md'
+  - Revue de code: 'REVIEW.md'
 
 # Configuration
 theme:
