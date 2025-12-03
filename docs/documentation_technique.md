@@ -212,8 +212,8 @@ sequenceDiagram
     | **Tests** ||||
     | Tests unitaires backend | JUnit + Mockito | - | Standard de facto pour tests unitaires en Java |
     | Tests intégration backend | Testcontainers | - | Tests avec vraie BDD |
-    | Tests unitaires frontend | Jest | - | Intégration native avec Angular CLI |
-    | Tests E2E frontend | Cypress | Selenium | Facilité d'écriture et maintenance |
+    | Tests unitaires frontend | Jasmine + Karma | Jest | Framework de test intégré par défaut avec Angular CLI |
+    | Tests E2E frontend | Playwright | Cypress | Excellente performance, API moderne, support multi-navigateurs |
     |||||
     | **Sécurité** ||||
     | Authentification | JWT | OAuth 2.0 | Simplicité, adapté aux API RESTful |
