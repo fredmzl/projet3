@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Install Python dependencies in venv"
+#MISE arg "--no-pip-upgrade" help="do not upgrade pip" default="true"
 
 set -e
 
@@ -44,11 +45,14 @@ EOF
     echo "✅ .env file for backend created!"
 else
     echo ".env file for backend already exists. Skipping creation."
-    exit 0
 fi
 
 
 echo "Installing dependencies..."
-pip install --upgrade pip
+if [ "${MISE_ARG_NO_PIP_UPGRADE}" == "true" ]; then
+    pip install --upgrade pip
+    echo "✓ pip upgraded!"
+fi
+
 pip install -r requirements.txt
 echo "✓ Dependencies installed!"
