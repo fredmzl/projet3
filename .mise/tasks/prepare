@@ -53,6 +53,10 @@ if [ "${MISE_ARG_NO_PIP_UPGRADE}" == "true" ]; then
     pip install --upgrade pip
     echo "✓ pip upgraded!"
 fi
-
 pip install -r requirements.txt
+cd ${MISE_CONFIG_ROOT}/frontend && npm install > /dev/null
+echo "✓ npm packages installed!"
+cd ${MISE_CONFIG_ROOT}/backend && mvn dependency:copy-dependencies > /dev/null
+echo "✓ Maven dependencies copied!"
+
 echo "✓ Dependencies installed!"
